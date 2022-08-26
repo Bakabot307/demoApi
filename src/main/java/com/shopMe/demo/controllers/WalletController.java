@@ -56,7 +56,7 @@ public class WalletController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<WalletDto> updateProduct(@RequestParam("token") String token) throws AuthenticationFailException {
+    public ResponseEntity<WalletDto> getUserWallet(@RequestParam("token") String token) throws AuthenticationFailException {
         authenticationService.authenticate(token);
 
         // get the user

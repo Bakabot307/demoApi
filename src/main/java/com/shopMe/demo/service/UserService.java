@@ -97,8 +97,9 @@ public class UserService {
             // token not present
             throw new CustomException(MessageStrings.AUTH_TOEKN_NOT_PRESENT);
         }
-
-        return new SignInResponseDto ("success", token.getToken());
+        UserDataDto userDataDto = new UserDataDto(user.getId(), user.getFirstName(), user.getLastName(), user.getRole().toString(), user.getEmail());
+        System.out.println(new SignInResponseDto ("success", token.getToken(), userDataDto));
+        return new SignInResponseDto ("success", token.getToken(), userDataDto);
     }
 //    public ResponseDto createUser(String token, UserCreateDto userCreateDto) throws CustomException, AuthenticationFailException {
 //        User creatingUser = authenticationService.getUser(token);
