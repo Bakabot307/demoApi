@@ -12,9 +12,9 @@ public class Wallet {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Value("0")
+
     private double STA;
-@Value("0")
+
     private double money;
 
     @JsonIgnore

@@ -63,7 +63,7 @@ public class WalletController {
         User user = authenticationService.getUser(token);
 
         // get items in the cart for the user.
-        WalletDto walletDto = walletService.getUserWallet(user);
+        WalletDto walletDto = walletService.getUserWalletDto(user);
 
         return new ResponseEntity<WalletDto>(walletDto,HttpStatus.OK);
     }
@@ -74,7 +74,6 @@ public class WalletController {
 
         // get the user
         User user = authenticationService.getUser(token);
-
         // get items in the cart for the user.
         walletService.depositWallet(money,user);
         String message = "deposited " + money;
@@ -87,7 +86,6 @@ public class WalletController {
                                                      @RequestParam("sta") double sta
                                                      ) throws AuthenticationFailException {
         authenticationService.authenticate(token);
-
         // get the user
         User user = authenticationService.getUser(token);
 

@@ -34,6 +34,7 @@ public class ProductService {
         product.setDescription(productDto.getDescription());
         product.setImageURL(productDto.getImageURL());
         product.setPrice(productDto.getPrice());
+        product.setPercentage(productDto.getPercentage());
         product.setName(productDto.getName());
         return product;
     }

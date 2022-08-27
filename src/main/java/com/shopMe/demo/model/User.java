@@ -31,10 +31,9 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "user",
-            fetch = FetchType.LAZY)
-    private List<Order> orders;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<OrderItem> orderItems;
+
 
     public Integer getId() {
         return id;
@@ -99,13 +98,6 @@ public class User {
     public User() {
     }
 
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
-    }
 
     public List<Logs> getLogs() {
         return logs;

@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
-@Table(name = "orderitems")
+@Table(name = "order_items")
 public class OrderItem {
 
     @Id
@@ -17,16 +17,16 @@ public class OrderItem {
     @Column(name = "quantity")
     private @NotNull int quantity;
 
-    @Column(name = "price")
-    private @NotNull double price;
+    @Column(name = "staProfit")
+    private @NotNull double staProfit;
 
     @Column(name = "created_date")
     private Date createdDate;
 
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "order_id", referencedColumnName = "id")
-    private Order order;
+    @JoinColumn(name = "users_id", referencedColumnName = "id")
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "id")
@@ -34,12 +34,12 @@ public class OrderItem {
 
     public OrderItem(){}
 
-    public OrderItem(Order order, @NotNull Product product, @NotNull int quantity, @NotNull double price) {
-        this.product = product;
+    public OrderItem(int quantity, double staProfit, Date createdDate, User user, Product product) {
         this.quantity = quantity;
-        this.price = price;
-        this.order= order;
-        this.createdDate = new Date();
+        this.staProfit = staProfit;
+        this.createdDate = createdDate;
+        this.user = user;
+        this.product = product;
     }
 
     public Product getProduct() {
@@ -60,11 +60,11 @@ public class OrderItem {
     }
 
     public double getPrice() {
-        return price;
+        return staProfit;
     }
 
     public void setPrice(double price) {
-        this.price = price;
+        this.staProfit = price;
     }
 
     public Date getCreatedDate() {
@@ -75,12 +75,5 @@ public class OrderItem {
         this.createdDate = createdDate;
     }
 
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
 }
 

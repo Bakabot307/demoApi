@@ -21,8 +21,7 @@ public class Order {
     @Column(name = "total_price")
     private Double totalPrice;
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
-    private List<OrderItem> orderItems;
+
 
     @ManyToOne()
     @JsonIgnore
@@ -32,13 +31,7 @@ public class Order {
     public Order() {
     }
 
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
-    }
 
-    public void setOrderItems(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
-    }
 
     public Integer getId() {
         return id;

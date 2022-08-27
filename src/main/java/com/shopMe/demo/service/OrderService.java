@@ -81,7 +81,6 @@ public class OrderService {
             orderItem.setPrice(cartItemDto.getProduct().getPrice());
             orderItem.setProduct(cartItemDto.getProduct());
             orderItem.setQuantity(cartItemDto.getQuantity());
-            orderItem.setOrder(newOrder);
             // add to order item list
             orderItemsRepository.save(orderItem);
         }

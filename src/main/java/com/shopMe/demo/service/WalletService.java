@@ -20,14 +20,28 @@ public class WalletService {
     UserRepository userRepository;
 
 
-    public WalletDto getUserWallet(User user) {
+    public WalletDto getUserWalletDto(User user) {
         Optional<Wallet> OWallet = walletRepository.findByUser(user);
         return new WalletDto(OWallet.get().getId(),OWallet.get().getSTA(),OWallet.get().getMoney());
+    }
+
+    public Wallet getUserWallet(User user) {
+        Optional<Wallet> OWallet = walletRepository.findByUser(user);
+        return OWallet.get();
     }
 
     public void createWallet(User user) {
         Wallet wallet  = new Wallet(0,0,user);
          walletRepository.save(wallet);
+    }
+
+    public void updateWallet(User user,WalletDto walletDto) {
+        Optional<Wallet> OWallet  = walletRepository.findByUser(user);
+        Wallet wallet = OWallet.get();
+
+        wallet.setSTA(walletDto.getSTA());
+        wallet.setMoney(walletDto.getMoney());
+        walletRepository.save(wallet);
     }
 
     public void depositWallet(double money, User user) {
