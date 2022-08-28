@@ -15,10 +15,11 @@ public class LogsService {
 
     @Autowired
     private LogsRepository logsRepository;
-    public List<Logs> getAllLogList(User user) {
+    public List<Logs> getAllLogListByUser(User user) {
         List<Logs> listLog = logsRepository.findAllByUserOrderByCreatedDateDesc(user);
        return listLog;
     }
+
     public void addLogToUser(User user, String message, String status ){
         Logs log = new Logs(status, message,new Date(),user);
         logsRepository.save(log);
@@ -36,5 +37,14 @@ public class LogsService {
     public void addLogToUserWithMoney(User user, String message, double money, String status ){
         Logs log = new Logs(money, message,new Date(),user,status);
         logsRepository.save(log);
+    }
+
+    public List<Logs> getAllLogListByStatus(String status) {
+       return logsRepository.findAllByStatus(status);
+
+    }
+
+    public List<Logs> getAllLog(String status) {
+        return logsRepository.findAll();
     }
 }

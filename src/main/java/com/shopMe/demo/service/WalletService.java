@@ -55,6 +55,15 @@ public class WalletService {
 
     }
 
+    public void withdrawMoney(double money, User user) {
+        Optional<Wallet> OWallet = walletRepository.findByUser(user);
+        double walletMoney;
+        walletMoney = OWallet.get().getMoney()-money;
+        OWallet.get().setPendingMoney(money);
+        OWallet.get().setMoney(walletMoney);
+        walletRepository.save(OWallet.get());
+    }
+
     public void exchangeMoney(double sta, User user) {
         Optional<Wallet> OWallet = walletRepository.findByUser(user);
         double moneyLeft;

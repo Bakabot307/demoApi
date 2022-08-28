@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface LogsRepository extends JpaRepository<Logs, Integer> {
     List<Logs> findAllByUserOrderByCreatedDateDesc(User user);
+
+    List<Logs> findAllByStatus(String status);
 }

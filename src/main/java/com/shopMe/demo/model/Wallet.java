@@ -17,6 +17,8 @@ public class Wallet {
 
     private double money;
 
+    private double pendingMoney;
+
     @JsonIgnore
     @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "user_id")
@@ -66,5 +68,13 @@ public class Wallet {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public double getPendingMoney() {
+        return pendingMoney;
+    }
+
+    public void setPendingMoney(double pendingMoney) {
+        this.pendingMoney = pendingMoney;
     }
 }
