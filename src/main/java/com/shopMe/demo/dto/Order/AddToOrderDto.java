@@ -20,7 +20,6 @@ public class AddToOrderDto {
 
     private Date createdDate;
 
-
     private Integer productId;
 
     public AddToOrderDto(Integer id, int quantity, double sta, Date createdDate, Integer productId) {

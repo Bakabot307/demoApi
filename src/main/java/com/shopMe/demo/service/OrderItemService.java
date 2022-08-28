@@ -41,7 +41,7 @@ public class OrderItemService {
         walletService.updateWallet(user,walletDto);
 
 
-        orderItemRepository.save(new OrderItem(1,0,new Date(),user,product.get()));
+        orderItemRepository.save(new OrderItem(1,0,new Date(),"Investing",user,product.get()));
 
     }
 }
