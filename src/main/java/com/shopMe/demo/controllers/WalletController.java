@@ -1,6 +1,7 @@
 package com.shopMe.demo.controllers;
 
 import com.shopMe.demo.common.ApiResponse;
+import com.shopMe.demo.dto.Request.RequestDto;
 import com.shopMe.demo.dto.cart.AddToCartDto;
 import com.shopMe.demo.dto.cart.CartDto;
 import com.shopMe.demo.dto.product.ProductDto;
@@ -13,6 +14,7 @@ import com.shopMe.demo.model.User;
 import com.shopMe.demo.model.Wallet;
 import com.shopMe.demo.service.AuthenticationService;
 import com.shopMe.demo.service.LogsService;
+import com.shopMe.demo.service.RequestService;
 import com.shopMe.demo.service.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +34,9 @@ public class WalletController {
 
     @Autowired
     private LogsService logsService;
+
+    @Autowired
+    private RequestService requestService;
 
     @Autowired
     AuthenticationService authenticationService;
@@ -108,6 +113,20 @@ public class WalletController {
         // get items in the cart for the user.
         walletService.sendSta(sta,user,receiver);
         return new ResponseEntity<>(new ApiResponse(true, "sent sta"), HttpStatus.OK);
+    }
+
+    @PutMapping("/requestWithdraw")
+    public ResponseEntity<ApiResponse> requestWithdraw(@RequestParam("token") String token,@RequestParam("money") double money) throws AuthenticationFailException {
+        authenticationService.authenticate(token);
+        // get the user
+        User user = authenticationService.getUser(token);
+
+        // get items in the cart for the user.
+        walletService.requestWithdraw(money,user);
+
+        String message = "withdraw " + money;
+        logsService.addLogToUserWithMoney(user,message,money,"added to request");
+        return new ResponseEntity<>(new ApiResponse(true, message), HttpStatus.OK);
     }
 
 }

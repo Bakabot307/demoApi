@@ -1,5 +1,6 @@
 package com.shopMe.demo.service;
 
+import com.shopMe.demo.dto.Request.RequestDto;
 import com.shopMe.demo.dto.wallet.WalletDto;
 import com.shopMe.demo.model.User;
 import com.shopMe.demo.model.Wallet;
@@ -18,6 +19,9 @@ public class WalletService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    RequestService requestService;
 
     @Autowired
     LogsService logsService;
@@ -55,12 +59,25 @@ public class WalletService {
 
     }
 
-    public void withdrawMoney(double money, User user) {
+    public void requestWithdraw(double money, User user) {
         Optional<Wallet> OWallet = walletRepository.findByUser(user);
         double walletMoney;
         walletMoney = OWallet.get().getMoney()-money;
         OWallet.get().setPendingMoney(money);
         OWallet.get().setMoney(walletMoney);
+        walletRepository.save(OWallet.get());
+
+        RequestDto requestDto = new RequestDto();
+        requestDto.setStatus("pending");
+        requestDto.setMoney(money);
+        requestDto.setMessage("withdraw");
+        requestService.addRequest(user,requestDto);
+    }
+
+    public void payout(double money, User user) {
+        Optional<Wallet> OWallet = walletRepository.findByUser(user);
+        OWallet.get().setPendingMoney(0);
+        //more will do here to send user real money to bank account
         walletRepository.save(OWallet.get());
     }
 

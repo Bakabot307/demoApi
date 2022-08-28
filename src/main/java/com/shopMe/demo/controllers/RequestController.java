@@ -59,4 +59,20 @@ public class RequestController {
 
         return new ResponseEntity<>(new ApiResponse(true, "failed"), HttpStatus.BAD_REQUEST);
     }
+
+    @PutMapping("/payout")
+    public ResponseEntity<ApiResponse> payoutMoney(@RequestParam("token") String token, @RequestBody RequestDto requestDto) throws AuthenticationFailException {
+        authenticationService.authenticate(token);
+        User user = authenticationService.getUser(token);
+        if(requestDto.getStatus().equalsIgnoreCase("accept")){
+            walletService.payout(requestDto.getMoney(),user);
+            requestService.updateRequest(user,requestDto);
+            return new ResponseEntity<>(new ApiResponse(true, "accepted request"), HttpStatus.OK);
+        } else if (requestDto.getStatus().equalsIgnoreCase("decline")){
+            requestService.updateRequest(user,requestDto);
+            return new ResponseEntity<>(new ApiResponse(true, "declined request"), HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(new ApiResponse(true, "failed"), HttpStatus.BAD_REQUEST);
+    }
 }
