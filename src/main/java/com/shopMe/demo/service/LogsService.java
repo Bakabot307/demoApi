@@ -19,9 +19,17 @@ public class LogsService {
         List<Logs> listLog = logsRepository.findAllByUserOrderByCreatedDateDesc(user);
        return listLog;
     }
-
     public void addLogToUser(User user, String message, String status ){
-        Logs log = new Logs(status,message,new Date(),user);
+        Logs log = new Logs(status, message,new Date(),user);
+        logsRepository.save(log);
+    }
+    public void addLogToUserWithSta(User user, String message, double sta, String status ){
+        Logs log = new Logs(status,sta, message,new Date(),user);
+        logsRepository.save(log);
+    }
+
+    public void addLogToUserWithMoney(User user, String message, double money, String status ){
+        Logs log = new Logs(money, message,new Date(),user,status);
         logsRepository.save(log);
     }
 }

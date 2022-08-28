@@ -13,9 +13,20 @@ public class Logs {
 
     private String status;
 
+    private double sta;
+
+    private double money;
     private String message;
 
     private Date createdDate;
+
+
+    @ManyToOne
+    @JoinColumn(name = "users_id", referencedColumnName = "id")
+    private User user;
+
+    public Logs() {
+    }
 
     public Logs(String status, String message, Date createdDate, User user) {
         this.status = status;
@@ -24,12 +35,22 @@ public class Logs {
         this.user = user;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "users_id", referencedColumnName = "id")
-    private User user;
-
-    public Logs() {
+    public Logs(String status, double sta, String message, Date createdDate, User user) {
+        this.status = status;
+        this.sta = sta;
+        this.message = message;
+        this.createdDate = createdDate;
+        this.user = user;
     }
+
+    public Logs(double money, String message, Date createdDate, User user,String status) {
+        this.status = status;
+        this.money = money;
+        this.message = message;
+        this.createdDate = createdDate;
+        this.user = user;
+    }
+
 
     public Integer getId() {
         return id;
@@ -69,5 +90,21 @@ public class Logs {
 
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public double getMoney() {
+        return money;
+    }
+
+    public void setMoney(double money) {
+        this.money = money;
+    }
+
+    public double getSta() {
+        return sta;
+    }
+
+    public void setSta(double sta) {
+        this.sta = sta;
     }
 }

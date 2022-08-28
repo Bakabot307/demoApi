@@ -1,4 +1,4 @@
-package com.shopMe.demo.dto;
+package com.shopMe.demo.dto.Log;
 
 public class LogDto {
 

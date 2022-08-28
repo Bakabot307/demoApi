@@ -32,6 +32,9 @@ public class UserService {
     @Autowired
     AuthenticationService authenticationService;
 
+    @Autowired
+    WalletService walletService;
+
 
     Logger logger = LoggerFactory.getLogger(UserService.class);
     public SignUpResponseDto signUp(SignupDto signupDto)  throws CustomException {
@@ -57,6 +60,7 @@ public class UserService {
             // save token in database
             authenticationService.saveConfirmationToken(authenticationToken);
             // success in creating
+            walletService.createWallet(user);
             return new SignUpResponseDto("success", "user created successfully");
         } catch (Exception e) {
             // handle signup error
