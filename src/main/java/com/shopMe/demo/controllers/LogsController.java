@@ -31,8 +31,6 @@ public class LogsController {
         authenticationService.authenticate(token);
         User user = authenticationService.getUser(token);
         List<Logs> logs = logsService.getAllLogList(user);
-
         return new ResponseEntity<>(logs, HttpStatus.OK);
-
     }
 }

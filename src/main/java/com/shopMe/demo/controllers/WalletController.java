@@ -91,9 +91,8 @@ public class WalletController {
 
         // get items in the cart for the user.
         walletService.exchangeMoney(sta,user);
-        String message = "Exchanged money to " + sta;
-        logsService.addLogToUserWithSta(user,message,sta,"success");
-        return new ResponseEntity<>(new ApiResponse(true, message), HttpStatus.OK);
+
+        return new ResponseEntity<>(new ApiResponse(true, "exchanged money successfully"), HttpStatus.OK);
     }
 
     @PutMapping("/send")
@@ -108,9 +107,7 @@ public class WalletController {
 
         // get items in the cart for the user.
         walletService.sendSta(sta,user,receiver);
-        String message = "sent "+ sta +  " to " + receiver;
-        logsService.addLogToUserWithSta(user,message,sta,"success");
-        return new ResponseEntity<>(new ApiResponse(true, message), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse(true, "sent sta"), HttpStatus.OK);
     }
 
 }

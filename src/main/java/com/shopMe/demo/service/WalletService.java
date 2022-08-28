@@ -19,6 +19,9 @@ public class WalletService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    LogsService logsService;
+
 
     public WalletDto getUserWalletDto(User user) {
         Optional<Wallet> OWallet = walletRepository.findByUser(user);
@@ -61,6 +64,8 @@ public class WalletService {
         OWallet.get().setMoney(moneyLeft);
         OWallet.get().setSTA(sta);
         walletRepository.save(OWallet.get());
+        String message = "Exchanged money";
+        logsService.addLogToUserWithSta(user,message,sta,"success");
     }
 
     public void sendSta(double sta, User user, String receiver) {
@@ -79,5 +84,7 @@ public class WalletService {
         walletRepository.save(OWallet.get());
         walletRepository.save(OWallet2.get());
 
+        String message = "sent sta";
+        logsService.StaSendingLog(user,OWallet2.get().getUser().getId(),message,sta,"success");
     }
 }

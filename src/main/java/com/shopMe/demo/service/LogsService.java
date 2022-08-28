@@ -28,6 +28,11 @@ public class LogsService {
         logsRepository.save(log);
     }
 
+    public void StaSendingLog(User user,Integer receiverId, String message, double sta, String status ){
+        Logs log = new Logs(status, sta, message,new Date(),receiverId,user);
+        logsRepository.save(log);
+    }
+
     public void addLogToUserWithMoney(User user, String message, double money, String status ){
         Logs log = new Logs(money, message,new Date(),user,status);
         logsRepository.save(log);

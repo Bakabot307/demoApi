@@ -20,10 +20,12 @@ public class Logs {
 
     private Date createdDate;
 
-
+    private Integer receiverId;
     @ManyToOne
     @JoinColumn(name = "users_id", referencedColumnName = "id")
     private User user;
+
+
 
     public Logs() {
     }
@@ -43,7 +45,17 @@ public class Logs {
         this.user = user;
     }
 
-    public Logs(double money, String message, Date createdDate, User user,String status) {
+    public Logs(String status, double sta, String message, Date createdDate, Integer receiverId, User user) {
+        this.status = status;
+        this.sta = sta;
+        this.money = money;
+        this.message = message;
+        this.createdDate = createdDate;
+        this.receiverId = receiverId;
+        this.user = user;
+    }
+
+    public Logs(double money, String message, Date createdDate, User user, String status) {
         this.status = status;
         this.money = money;
         this.message = message;
@@ -106,5 +118,13 @@ public class Logs {
 
     public void setSta(double sta) {
         this.sta = sta;
+    }
+
+    public Integer getReceiverId() {
+        return receiverId;
+    }
+
+    public void setReceiverId(Integer receiverId) {
+        this.receiverId = receiverId;
     }
 }
