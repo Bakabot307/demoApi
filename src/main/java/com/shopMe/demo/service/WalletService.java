@@ -54,7 +54,7 @@ public class WalletService {
     public void depositWallet(double money, User user) {
         Optional<Wallet> OWallet = walletRepository.findByUser(user);
 
-        OWallet.get().setMoney(money);
+        OWallet.get().setMoney(OWallet.get().getMoney()+money);
         walletRepository.save(OWallet.get());
 
     }
@@ -83,12 +83,13 @@ public class WalletService {
 
     public void exchangeMoney(double sta, User user) {
         Optional<Wallet> OWallet = walletRepository.findByUser(user);
-        double moneyLeft;
+        double moneyLeft, walletSta;
+        walletSta = OWallet.get().getSTA()+sta;
 
 
         moneyLeft = OWallet.get().getMoney()-(sta*10000);
         OWallet.get().setMoney(moneyLeft);
-        OWallet.get().setSTA(sta);
+        OWallet.get().setSTA(walletSta);
         walletRepository.save(OWallet.get());
         String message = "Exchanged money";
         logsService.addLogToUserWithSta(user,message,sta,"success");
@@ -110,7 +111,7 @@ public class WalletService {
         walletRepository.save(OWallet.get());
         walletRepository.save(OWallet2.get());
 
-        String message = "sent sta";
+        String message = "sending";
         logsService.StaSendingLog(user,OWallet2.get().getUser().getId(),message,sta,"success");
     }
 }

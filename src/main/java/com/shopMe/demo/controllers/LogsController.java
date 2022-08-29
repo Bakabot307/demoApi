@@ -38,7 +38,7 @@ public class LogsController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<Logs>> getAllLogs(@PathVariable("status") String status) throws AuthenticationFailException {
+    public ResponseEntity<List<Logs>> getAllLogs(@RequestParam("status") String status) throws AuthenticationFailException {
         List<Logs> logs = logsService.getAllLogListByStatus(status);
         return new ResponseEntity<>(logs, HttpStatus.OK);
     }
