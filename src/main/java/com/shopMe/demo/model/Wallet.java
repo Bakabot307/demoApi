@@ -25,8 +25,10 @@ public class Wallet {
     private User user;
 
 
+    public Wallet() {
+    }
 
-    public Wallet( double STA, double money, User user) {
+    public Wallet(double STA, double money, User user) {
         this.STA = STA;
         this.money = money;
         this.user = user;
