@@ -36,6 +36,12 @@ public class RequestController {
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<Request>> getAllByStatus(@RequestParam String status) throws AuthenticationFailException {
+        List<Request> list = requestService.getAllByStatus(status);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
     @PostMapping("/")
     public ResponseEntity<ApiResponse> addRequest(@RequestParam("token") String token, @RequestBody RequestDto requestDto) throws AuthenticationFailException {
         authenticationService.authenticate(token);

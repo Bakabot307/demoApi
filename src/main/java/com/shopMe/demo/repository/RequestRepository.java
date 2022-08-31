@@ -11,4 +11,6 @@ import java.util.List;
 public interface RequestRepository extends JpaRepository<Request, Integer> {
 
     List<Request> findAllByUserAndStatus(User user, String status);
+
+    List<Request> findAllByStatus(String status);
 }

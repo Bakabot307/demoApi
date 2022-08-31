@@ -60,4 +60,7 @@ public class RequestService {
     }
 
 
+    public List<Request> getAllByStatus(String status) {
+        return requestRepository.findAllByStatus(status);
+    }
 }
