@@ -1,6 +1,8 @@
 package com.shopMe.demo.service;
 
 import com.shopMe.demo.dto.Order.AddToOrderDto;
+import com.shopMe.demo.dto.OrderItemDto;
+import com.shopMe.demo.dto.cart.CartItemDto;
 import com.shopMe.demo.dto.wallet.WalletDto;
 import com.shopMe.demo.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,6 +105,18 @@ public class OrderItemService {
 
 
 
+
+    }
+
+    public List<OrderItemDto> getAllByUser(User user) {
+       List<OrderItem> orderList =  orderItemRepository.findByUser(user);
+       List<OrderItemDto> orderItemDtos = new ArrayList<>();
+
+        for (OrderItem orderItem :orderList){
+            OrderItemDto orderItemDto = new OrderItemDto(orderItem);
+           orderItemDtos.add(orderItemDto);
+        }
+       return orderItemDtos;
 
     }
 }

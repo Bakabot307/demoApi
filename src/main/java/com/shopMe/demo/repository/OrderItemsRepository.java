@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface OrderItemsRepository extends JpaRepository<OrderItem,Integer> {
-    Optional<OrderItem> findByUser(User user);
+    List<OrderItem> findByUser(User user);
 
     OrderItem findByProduct(Product product);
 
