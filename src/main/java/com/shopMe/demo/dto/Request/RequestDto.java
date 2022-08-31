@@ -19,6 +19,7 @@ public class RequestDto {
 
     private String message;
 
+
     public RequestDto() {
     }
 

@@ -3,11 +3,13 @@ package com.shopMe.demo.controllers;
 
 import com.shopMe.demo.common.ApiResponse;
 import com.shopMe.demo.dto.Request.RequestDto;
+import com.shopMe.demo.enums.Role;
 import com.shopMe.demo.exceptions.AuthenticationFailException;
 import com.shopMe.demo.model.Request;
 import com.shopMe.demo.model.User;
 import com.shopMe.demo.service.AuthenticationService;
 import com.shopMe.demo.service.RequestService;
+import com.shopMe.demo.service.UserService;
 import com.shopMe.demo.service.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,9 @@ public class RequestController {
     private WalletService walletService;
     @Autowired
     private AuthenticationService authenticationService;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/")
     public ResponseEntity<List<Request>> getAllByUserAndStatus(@RequestParam("token") String token, @RequestParam String status) throws AuthenticationFailException {
@@ -54,6 +59,10 @@ public class RequestController {
     public ResponseEntity<ApiResponse> updateRequest(@RequestParam("token") String token, @RequestBody RequestDto requestDto) throws AuthenticationFailException {
         authenticationService.authenticate(token);
         User user = authenticationService.getUser(token);
+
+        if(Role.admin!=user.getRole()){
+            return new ResponseEntity<>(new ApiResponse(true, "need to be admin"), HttpStatus.FORBIDDEN);
+        }
         if(requestDto.getStatus().equalsIgnoreCase("accept")){
             walletService.depositWallet(requestDto.getMoney(),user);
             requestService.updateRequest(user,requestDto);

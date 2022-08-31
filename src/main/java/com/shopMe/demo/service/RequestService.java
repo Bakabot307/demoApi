@@ -51,7 +51,7 @@ public class RequestService {
         Optional<Request> ORequest  = requestRepository.findById(requestDto.getId());
         Request request = ORequest.get();
 
-        request.setStatus(request.getStatus());
+        request.setStatus(requestDto.getStatus());
         request.setMoney(requestDto.getMoney());
         request.setSta(requestDto.getSta());
         request.setCheckedDate(new Date());
