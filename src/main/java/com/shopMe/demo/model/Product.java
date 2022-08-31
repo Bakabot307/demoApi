@@ -21,7 +21,7 @@ public class Product {
 
     private @NotNull double percentage;
 
-    private @NotNull int investYear;
+    private @NotNull int investMonth;
     private @NotNull String description;
 
     @JsonIgnore
@@ -116,12 +116,12 @@ public class Product {
         this.percentage = percentage;
     }
 
-    public int getInvestYear() {
-        return investYear;
+    public int getInvestMonth() {
+        return investMonth;
     }
 
-    public void setInvestYear(int investYear) {
-        this.investYear = investYear;
+    public void setInvestMonth(int investYear) {
+        this.investMonth = investYear;
     }
 
     public List<Cart> getCarts() {

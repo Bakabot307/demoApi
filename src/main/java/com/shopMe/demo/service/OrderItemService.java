@@ -1,5 +1,6 @@
 package com.shopMe.demo.service;
 
+import com.shopMe.demo.config.DateUtils;
 import com.shopMe.demo.dto.Order.AddToOrderDto;
 import com.shopMe.demo.dto.OrderItemDto;
 import com.shopMe.demo.dto.cart.CartItemDto;
@@ -46,16 +47,25 @@ public class OrderItemService {
         Optional<Product>  product  = productRepository.findById(addToOrderDto.getProductId());
 
         WalletDto walletDto = walletService.getUserWalletDto(user);
-
         double sta;
-
         sta = walletDto.getSTA()-product.get().getPrice();
-
-        walletDto.setSTA(sta);
+        walletDto.setSTA(product.get().getPrice());
         walletService.updateWallet(user,walletDto);
+        OrderItem orderItem = new OrderItem();
+        LocalDate claimDate;
+        Date createdDate = new Date();
 
+        claimDate = DateUtils.asLocalDate(createdDate).plusMonths(product.get().getInvestMonth());
 
-        orderItemRepository.save(new OrderItem(1,0,new Date(),"Investing",user,product.get()));
+        orderItem.setQuantity(1);
+        orderItem.setCreatedDate(new Date());
+        orderItem.setClaimDate(DateUtils.asDate(claimDate));
+        orderItem.setProduct(product.get());
+        orderItem.setStaProfit(0);
+        orderItem.setStatus("Investing");
+        orderItem.setUser(user);
+
+        orderItemRepository.save(orderItem);
 
     }
 
@@ -78,7 +88,7 @@ public class OrderItemService {
             double profit,percentPerMonth;
             int investMonth;
 
-            investMonth = orderItem.getProduct().getInvestYear()*12;
+            investMonth = orderItem.getProduct().getInvestMonth();
             double month = (double)daysBetween/30;
 
 

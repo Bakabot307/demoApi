@@ -14,21 +14,9 @@ public class AddToOrderDto {
 
     private Integer id;
 
-    private  int quantity;
-
-    private  double sta;
-
-    private Date createdDate;
 
     private Integer productId;
 
-    public AddToOrderDto(Integer id, int quantity, double sta, Date createdDate, Integer productId) {
-        this.id = id;
-        this.quantity = quantity;
-        this.sta = sta;
-        this.createdDate = createdDate;
-        this.productId = productId;
-    }
 
     public AddToOrderDto() {
     }
@@ -41,29 +29,7 @@ public class AddToOrderDto {
         this.id = id;
     }
 
-    public int getQuantity() {
-        return quantity;
-    }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public double getSta() {
-        return sta;
-    }
-
-    public void setSta(double sta) {
-        this.sta = sta;
-    }
-
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
 
     public Integer getProductId() {
         return productId;
@@ -72,4 +38,6 @@ public class AddToOrderDto {
     public void setProductId(Integer productId) {
         this.productId = productId;
     }
+
+
 }
