@@ -21,6 +21,7 @@ public class Product {
 
     private @NotNull double percentage;
 
+    private @NotNull int investYear;
     private @NotNull String description;
 
     @JsonIgnore
@@ -113,6 +114,22 @@ public class Product {
 
     public void setPercentage(double percentage) {
         this.percentage = percentage;
+    }
+
+    public int getInvestYear() {
+        return investYear;
+    }
+
+    public void setInvestYear(int investYear) {
+        this.investYear = investYear;
+    }
+
+    public List<Cart> getCarts() {
+        return carts;
+    }
+
+    public void setCarts(List<Cart> carts) {
+        this.carts = carts;
     }
 
     @Override

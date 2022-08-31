@@ -23,6 +23,8 @@ public class OrderItem {
     @Column(name = "created_date")
     private Date createdDate;
 
+    @Column(name = "claim_date")
+    private Date claimDate;
 
     private String status;
 
@@ -102,6 +104,22 @@ public class OrderItem {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Date getClaimDate() {
+        return claimDate;
+    }
+
+    public void setClaimDate(Date claimDate) {
+        this.claimDate = claimDate;
     }
 }
 
