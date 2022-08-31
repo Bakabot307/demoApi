@@ -11,10 +11,7 @@ import com.shopMe.demo.exceptions.AuthenticationFailException;
 import com.shopMe.demo.model.Cart;
 import com.shopMe.demo.model.Request;
 import com.shopMe.demo.model.User;
-import com.shopMe.demo.service.AuthenticationService;
-import com.shopMe.demo.service.RequestService;
-import com.shopMe.demo.service.UserService;
-import com.shopMe.demo.service.WalletService;
+import com.shopMe.demo.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +35,9 @@ public class RequestController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private LogsService logsService;
 
     @GetMapping("/")
     public ResponseEntity<List<Request>> getAllByUserAndStatus(@RequestParam("token") String token, @RequestParam String status) throws AuthenticationFailException {
@@ -94,9 +94,11 @@ public class RequestController {
         if(requestDto.getStatus().equalsIgnoreCase("accept")){
             walletService.depositWallet(requestDto.getMoney(),user2.get());
             requestService.updateRequest(user,requestDto);
+            logsService.addLogToUserWithMoney(user2.get(),"Deposit",requestDto.getMoney(),"success");
             return new ResponseEntity<>(new ApiResponse(true, "accepted request"), HttpStatus.OK);
         } else if (requestDto.getStatus().equalsIgnoreCase("decline")){
             requestService.updateRequest(user,requestDto);
+            logsService.addLogToUserWithMoney(user2.get(),"Deposit",requestDto.getMoney(),"failed");
             return new ResponseEntity<>(new ApiResponse(true, "declined request"), HttpStatus.OK);
         }
 

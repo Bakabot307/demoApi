@@ -82,8 +82,6 @@ public class OrderItemService {
             claimDate = orderItem.getClaimDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             long daysLeft = ChronoUnit.DAYS.between(today, claimDate);
             long daysBetween = ChronoUnit.DAYS.between(createdDate, today);
-            System.out.println("created date" +createdDate);
-            System.out.println("today date" +today);
 
             double profit,percentPerMonth;
             int investMonth;
@@ -94,7 +92,7 @@ public class OrderItemService {
 
             percentPerMonth = orderItem.getProduct().getPercentage()/investMonth;
 
-            profit = orderItem.getProduct().getPrice()*percentPerMonth*month;
+            profit = orderItem.getProduct().getPrice()+(orderItem.getProduct().getPrice()*percentPerMonth/100*(int)month);
             System.out.println(orderItem.getProduct().getPrice());
             System.out.println(percentPerMonth);
             System.out.println(month);
