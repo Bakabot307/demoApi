@@ -7,6 +7,7 @@ import com.shopMe.demo.model.Product;
 import com.shopMe.demo.model.User;
 import com.shopMe.demo.model.Wallet;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import com.shopMe.demo.repository.*;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,8 +25,12 @@ public class OrderItemService {
     @Autowired
     private ProductRepository productRepository;
 
-    @Autowired
     private WalletService walletService;
+
+    @Autowired
+    public OrderItemService(@Lazy WalletService walletService) {
+        this.walletService = walletService;
+    }
 
 
     public void placeOrder(User user, AddToOrderDto addToOrderDto) {

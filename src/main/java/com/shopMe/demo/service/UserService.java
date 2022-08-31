@@ -2,9 +2,7 @@ package com.shopMe.demo.service;
 
 
 import com.shopMe.demo.config.MessageStrings;
-import com.shopMe.demo.dto.ResponseDto;
 import com.shopMe.demo.dto.user.*;
-import com.shopMe.demo.enums.ResponseStatus;
 import com.shopMe.demo.enums.Role;
 import com.shopMe.demo.exceptions.AuthenticationFailException;
 import com.shopMe.demo.exceptions.CustomException;
@@ -16,13 +14,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 import java.util.Objects;
-import static com.shopMe.demo.config.MessageStrings.USER_CREATED;
+import java.util.Optional;
+
 @Service
 public class UserService {
 
@@ -34,6 +31,7 @@ public class UserService {
 
     @Autowired
     WalletService walletService;
+
 
 
     Logger logger = LoggerFactory.getLogger(UserService.class);
@@ -77,6 +75,12 @@ public class UserService {
         return myHash;
     }
 
+   public User getOwner() {
+
+        User owner = userRepository.findByRole(Role.owner);
+       return owner;
+    }
+
     public SignInResponseDto signIn(SignInDto signInDto) throws AuthenticationFailException, CustomException {
         // first find User by email
         User user = userRepository.findByEmail(signInDto.getEmail());
@@ -104,6 +108,12 @@ public class UserService {
         UserDataDto userDataDto = new UserDataDto(user.getId(), user.getFirstName(), user.getLastName(), user.getRole().toString(), user.getEmail());
         return new SignInResponseDto ("success", token.getToken(), userDataDto);
     }
+
+    public Optional<User> getById(Integer id) {
+        return userRepository.findById(id);
+    }
+
+
 //    public ResponseDto createUser(String token, UserCreateDto userCreateDto) throws CustomException, AuthenticationFailException {
 //        User creatingUser = authenticationService.getUser(token);
 //        if (!canCrudUser(creatingUser.getRole())) {

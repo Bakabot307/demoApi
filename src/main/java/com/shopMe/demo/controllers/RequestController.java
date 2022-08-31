@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/request")
@@ -59,12 +60,13 @@ public class RequestController {
     public ResponseEntity<ApiResponse> updateRequest(@RequestParam("token") String token, @RequestBody RequestDto requestDto) throws AuthenticationFailException {
         authenticationService.authenticate(token);
         User user = authenticationService.getUser(token);
+        Optional<User> user2 = userService.getById(requestDto.getId());
 
         if(Role.admin!=user.getRole()){
             return new ResponseEntity<>(new ApiResponse(true, "need to be admin"), HttpStatus.FORBIDDEN);
         }
         if(requestDto.getStatus().equalsIgnoreCase("accept")){
-            walletService.depositWallet(requestDto.getMoney(),user);
+            walletService.depositWallet(requestDto.getMoney(),user2.get());
             requestService.updateRequest(user,requestDto);
             return new ResponseEntity<>(new ApiResponse(true, "accepted request"), HttpStatus.OK);
         } else if (requestDto.getStatus().equalsIgnoreCase("decline")){

@@ -5,6 +5,7 @@ import com.shopMe.demo.dto.wallet.WalletDto;
 import com.shopMe.demo.model.User;
 import com.shopMe.demo.model.Wallet;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import com.shopMe.demo.repository.WalletRepository;
 import com.shopMe.demo.repository.UserRepository;
@@ -25,6 +26,13 @@ public class WalletService {
 
     @Autowired
     LogsService logsService;
+
+    private UserService userService;
+
+    @Autowired
+    public WalletService(@Lazy UserService userService) {
+        this.userService = userService;
+    }
 
 
     public WalletDto getUserWalletDto(User user) {
@@ -83,16 +91,18 @@ public class WalletService {
 
     public void exchangeMoney(double sta, User user) {
         Optional<Wallet> OWallet = walletRepository.findByUser(user);
+        Optional<Wallet> ownerWallet = walletRepository.findByUser(userService.getOwner());
         double moneyLeft, walletSta;
         walletSta = OWallet.get().getSTA()+sta;
-
-
+        ownerWallet.get().setSTA(ownerWallet.get().getSTA()-sta);
         moneyLeft = OWallet.get().getMoney()-(sta*10000);
         OWallet.get().setMoney(moneyLeft);
         OWallet.get().setSTA(walletSta);
+
+        walletRepository.save(ownerWallet.get());
         walletRepository.save(OWallet.get());
         String message = "Exchanged money";
-        logsService.addLogToUserWithSta(user,message,sta,"success");
+        logsService.addExchangeMoneyToStaLog(user,message,sta,"success");
     }
 
     public void sendSta(double sta, User user, String receiver) {
