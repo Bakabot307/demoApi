@@ -1,9 +1,9 @@
 package com.shopMe.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name="wallet")
@@ -24,8 +24,7 @@ public class Wallet {
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
 
-    public Wallet() {
-    }
+
 
     public Wallet( double STA, double money, User user) {
         this.STA = STA;
@@ -37,6 +36,7 @@ public class Wallet {
         this.money = money;
         this.user = user;
     }
+
 
     public Integer getId() {
         return id;

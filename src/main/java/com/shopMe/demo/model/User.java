@@ -2,7 +2,6 @@ package com.shopMe.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.shopMe.demo.enums.Role;
-import com.shopMe.demo.model.Order;
 
 
 import javax.persistence.*;
@@ -34,6 +33,8 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<OrderItem> orderItems;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Market> market;
 
     public Integer getId() {
         return id;
