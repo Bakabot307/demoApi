@@ -1,6 +1,8 @@
 package com.shopMe.demo.service;
 
+import com.shopMe.demo.dto.Request.RequestDataDto;
 import com.shopMe.demo.dto.Request.RequestDto;
+import com.shopMe.demo.dto.Request.RequestUpdateDto;
 import com.shopMe.demo.model.Request;
 import com.shopMe.demo.model.User;
 import com.shopMe.demo.model.Wallet;
@@ -47,7 +49,7 @@ public class RequestService {
         requestRepository.save(request);
     }
 
-    public void updateRequest(User user, RequestDto requestDto) {
+    public void updateRequest(User user, RequestUpdateDto requestDto) {
         Optional<Request> ORequest  = requestRepository.findById(requestDto.getId());
         Request request = ORequest.get();
 

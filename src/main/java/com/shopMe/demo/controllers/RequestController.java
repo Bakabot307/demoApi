@@ -2,9 +2,13 @@ package com.shopMe.demo.controllers;
 
 
 import com.shopMe.demo.common.ApiResponse;
+import com.shopMe.demo.dto.Request.RequestDataDto;
 import com.shopMe.demo.dto.Request.RequestDto;
+import com.shopMe.demo.dto.Request.RequestUpdateDto;
+import com.shopMe.demo.dto.cart.CartItemDto;
 import com.shopMe.demo.enums.Role;
 import com.shopMe.demo.exceptions.AuthenticationFailException;
+import com.shopMe.demo.model.Cart;
 import com.shopMe.demo.model.Request;
 import com.shopMe.demo.model.User;
 import com.shopMe.demo.service.AuthenticationService;
@@ -16,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,9 +48,30 @@ public class RequestController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Request>> getAllByStatus(@RequestParam String status) throws AuthenticationFailException {
+    public ResponseEntity<List<RequestDataDto>> getAllByStatus(@RequestParam String status) throws AuthenticationFailException {
         List<Request> list = requestService.getAllByStatus(status);
-        return new ResponseEntity<>(list, HttpStatus.OK);
+
+        List<RequestDataDto> requestDtos =new ArrayList<>();
+
+        for (Request request : list){
+            RequestDataDto requestDto = new RequestDataDto();
+
+            requestDto.setId(request.getId());
+            requestDto.setStatus(request.getStatus());
+            requestDto.setSta(request.getSta());
+            requestDto.setCreatedDate(request.getCreatedDate());
+            requestDto.setMessage(request.getMessage());
+            requestDto.setMoney(request.getMoney());
+            requestDto.setCheckedDate(request.getCheckedDate());
+            requestDto.setUserId(request.getUser().getId());
+
+
+            requestDtos.add(requestDto);
+
+        }
+
+
+        return new ResponseEntity<>(requestDtos, HttpStatus.OK);
     }
 
     @PostMapping("/")
@@ -57,7 +83,7 @@ public class RequestController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<ApiResponse> updateRequest(@RequestParam("token") String token, @RequestBody RequestDto requestDto) throws AuthenticationFailException {
+    public ResponseEntity<ApiResponse> updateRequest(@RequestParam("token") String token, @RequestBody RequestUpdateDto requestDto) throws AuthenticationFailException {
         authenticationService.authenticate(token);
         User user = authenticationService.getUser(token);
         Optional<User> user2 = userService.getById(requestDto.getUserId());
@@ -78,7 +104,7 @@ public class RequestController {
     }
 
     @PutMapping("/payout")
-    public ResponseEntity<ApiResponse> payoutMoney(@RequestParam("token") String token, @RequestBody RequestDto requestDto) throws AuthenticationFailException {
+    public ResponseEntity<ApiResponse> payoutMoney(@RequestParam("token") String token, @RequestBody RequestUpdateDto requestDto) throws AuthenticationFailException {
         authenticationService.authenticate(token);
         User user = authenticationService.getUser(token);
         if(requestDto.getStatus().equalsIgnoreCase("accept")){

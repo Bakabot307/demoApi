@@ -35,6 +35,8 @@ public class Request {
     @JoinColumn(nullable = false, name = "wallet_id")
     private Wallet wallet;
 
+
+
     public Integer getId() {
         return id;
     }
