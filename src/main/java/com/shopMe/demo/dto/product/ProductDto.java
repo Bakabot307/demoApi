@@ -1,29 +1,30 @@
 package com.shopMe.demo.dto.product;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.shopMe.demo.model.Cart;
+import com.shopMe.demo.model.Category;
 import com.shopMe.demo.model.Product;
 
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public class ProductDto {
 
     private Integer id;
+
     private @NotNull String name;
     private @NotNull String imageURL;
     private @NotNull double price;
 
     private @NotNull double percentage;
+
+    private @NotNull int investMonth;
     private @NotNull String description;
+
     private @NotNull Integer categoryId;
 
-    public ProductDto(@NotNull String name, @NotNull String imageURL, @NotNull double price, @NotNull double percentage,@NotNull String description, @NotNull Integer categoryId) {
-        this.name = name;
-        this.imageURL = imageURL;
-        this.price = price;
-        this.percentage= percentage;
-        this.description = description;
-        this.categoryId = categoryId;
-    }
 
     public ProductDto(Product product) {
         this.setId(product.getId());
@@ -33,6 +34,8 @@ public class ProductDto {
         this.setDescription(product.getDescription());
         this.setPrice(product.getPrice());
         this.setCategoryId(product.getCategory().getId());
+        this.setInvestMonth(product.getInvestMonth());
+
     }
 
     public ProductDto() {
@@ -92,5 +95,13 @@ public class ProductDto {
 
     public void setPercentage(double percentage) {
         this.percentage = percentage;
+    }
+
+    public int getInvestMonth() {
+        return investMonth;
+    }
+
+    public void setInvestMonth(int investMonth) {
+        this.investMonth = investMonth;
     }
 }

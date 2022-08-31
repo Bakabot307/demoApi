@@ -36,6 +36,8 @@ public class ProductService {
         product.setPrice(productDto.getPrice());
         product.setPercentage(productDto.getPercentage());
         product.setName(productDto.getName());
+        product.setInvestMonth(productDto.getInvestMonth());
+
         return product;
     }
 

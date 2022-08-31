@@ -39,7 +39,7 @@ public class OrderItemController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<List<OrderItemDto>> placeOrder(@RequestParam("token") String token)
+    public ResponseEntity<List<OrderItemDto>> getOrderByUser(@RequestParam("token") String token)
             throws AuthenticationFailException {
         // validate token
         authenticationService.authenticate(token);
