@@ -60,7 +60,7 @@ public class RequestController {
     public ResponseEntity<ApiResponse> updateRequest(@RequestParam("token") String token, @RequestBody RequestDto requestDto) throws AuthenticationFailException {
         authenticationService.authenticate(token);
         User user = authenticationService.getUser(token);
-        Optional<User> user2 = userService.getById(requestDto.getId());
+        Optional<User> user2 = userService.getById(requestDto.getUserId());
 
         if(Role.admin!=user.getRole()){
             return new ResponseEntity<>(new ApiResponse(true, "need to be admin"), HttpStatus.FORBIDDEN);
