@@ -25,10 +25,18 @@ public class Logs {
     @JoinColumn(name = "users_id", referencedColumnName = "id")
     private User user;
 
-
-
     public Logs() {
     }
+
+    public Logs(Market market) {
+        this.id = market.getId();
+        this.status = market.getStatus();
+        this.sta = market.getSta();
+        this.money = market.getSta();
+        this.createdDate = market.getCreatedDate();
+        this.user = market.getUser();
+    }
+
 
     public Logs( User user, Logs logs) {
         this.id = logs.getId();

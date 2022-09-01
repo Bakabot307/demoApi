@@ -26,57 +26,62 @@ public class MarketService {
     @Autowired
     private LogsService logsService;
 
-    public void AddToList( User user, AddToMarketDto marketDto){
+    public void AddToList(User user, AddToMarketDto marketDto) {
         Market list = new Market();
         Wallet wallet = walletService.getUserWallet(user);
 
         List<Market> marketList = marketRepository.findAllByUser(user);
         boolean updated = false;
 
-       for(Market marketL : marketList){
-           if(marketL.getPrice()==marketDto.getPrice()&&marketL.getStatus().equalsIgnoreCase("placing")
-                   &&marketL.getType().equalsIgnoreCase(marketDto.getType())){
-               marketL.setSta(marketL.getSta()+ marketDto.getSta());
-               marketL.setStaAvailable(marketL.getStaAvailable()+ marketDto.getSta());
-               marketRepository.save(marketL);
-               if(checkMarketPrice(marketDto)){
-                   updateMarket(user,marketL,marketDto.getStatus());
-               }
-               updated = true;
-           }
-       }
-       if(!updated){
-           list.setCreatedDate(new Date());
-           list.setUser(user);
-           list.setSta(marketDto.getSta());
-           list.setPrice(marketDto.getPrice());
-           list.setStatus(marketDto.getStatus());
-           list.setType(marketDto.getType());
-           list.setStaAvailable(marketDto.getSta());
-           Market market = marketRepository.save(list);
-           marketRepository.flush();
+        for (Market marketL : marketList) {
+            if (marketL.getPrice() == marketDto.getPrice() && marketL.getStatus().equalsIgnoreCase("placing")
+                    && marketL.getType().equalsIgnoreCase(marketDto.getType())) {
+                marketL.setSta(marketL.getSta() + marketDto.getSta());
+                marketL.setStaAvailable(marketL.getStaAvailable() + marketDto.getSta());
+                marketRepository.save(marketL);
+                if (checkMarketPrice(marketDto)) {
+                    updateMarket(user, marketL, marketDto.getStatus());
+                }
+                updated = true;
+            }
+        }
+        if (!updated) {
+            list.setCreatedDate(new Date());
+            list.setUser(user);
+            list.setSta(marketDto.getSta());
+            list.setPrice(marketDto.getPrice());
+            list.setStatus(marketDto.getStatus());
+            list.setType(marketDto.getType());
+            list.setStaAvailable(marketDto.getSta());
+            Market market = marketRepository.save(list);
+            marketRepository.flush();
 
-           if(market.getType().equalsIgnoreCase("sell")){
-               wallet.setSTA(wallet.getSTA()- marketDto.getSta());
-               walletService.save(wallet);
-           }
+            if (market.getType().equalsIgnoreCase("sell")) {
+                wallet.setSTA(wallet.getSTA() - marketDto.getSta());
+                walletService.save(wallet);
+            }
+            if(market.getType().equalsIgnoreCase("buy")){
+                wallet.setMoney(wallet.getMoney()-marketDto.getSta()* marketDto.getPrice());
+                walletService.save(wallet);
+            }
 
-           Logs log = new Logs();
-           log.setStatus(marketDto.getStatus());
-           log.setSta(marketDto.getSta());
-           log.setMessage(marketDto.getType());
-           log.setUser(user);
-           log.setCreatedDate(list.getCreatedDate());
-           log.setMoney(marketDto.getPrice());
-           logsService.addLog(user,log);
+            Logs log = new Logs();
+            log.setStatus(marketDto.getStatus());
+            log.setSta(marketDto.getSta());
+            log.setMessage(marketDto.getType());
+            log.setUser(user);
+            log.setCreatedDate(list.getCreatedDate());
+            log.setMoney(marketDto.getPrice());
+            logsService.addLog(user, log);
 
 
-           if(checkMarketPrice(marketDto)){
-               updateMarket(user,market,marketDto.getStatus());
-           }
-       }
+            if (checkMarketPrice(marketDto)) {
+                updateMarket(user, market, marketDto.getStatus());
+            }
+        }
     }
-    public void updateMarket( User user, Market market,String status){
+
+    public void updateMarket(User user, Market market, String status) {
         Wallet wallet = walletService.getUserWallet(user);
 
         List<Market> list = marketRepository.getAllByStatusOrderByCreatedDateDesc(status);
@@ -88,24 +93,24 @@ public class MarketService {
                 break;
 
             }
-            if(marketL.getPrice()== market.getPrice() && marketL.getSta() != 0
-                    && marketL.getSta()!=0
+            if (marketL.getPrice() == market.getPrice() && marketL.getSta() != 0
+                    && marketL.getSta() != 0
                     && marketL.getType().equalsIgnoreCase("sell")
                     && market.getType().equalsIgnoreCase("buy")
-            ){
+            ) {
 
-                if( marketL.getStaAvailable() >= market.getStaAvailable()){
+                if (marketL.getStaAvailable() >= market.getStaAvailable()) {
 
                     double amount = market.getSta();
                     market.setStaAvailable(0);
                     market.setStatus("completed");
-                    marketL.setStaAvailable(marketL.getStaAvailable()-amount);
+                    marketL.setStaAvailable(marketL.getStaAvailable() - amount);
 
-                    walletL.setMoney(walletL.getMoney()+ amount * marketL.getPrice());
-                    wallet.setMoney(wallet.getMoney()- amount * marketL.getPrice());
+                    walletL.setMoney(walletL.getMoney() + amount * marketL.getPrice());
+                    wallet.setMoney(wallet.getMoney() - amount * marketL.getPrice());
                     wallet.setSTA(amount);
 
-                    if(marketL.getStaAvailable()==0){
+                    if (marketL.getStaAvailable() == 0) {
                         marketL.setStatus("completed");
                     }
 
@@ -131,65 +136,52 @@ public class MarketService {
                     log2.setCreatedDate(marketL.getCreatedDate());
                     log2.setMoney(marketL.getPrice());
 
-                    logsService.addLog(user,log);
-                    logsService.addLog(marketL.getUser(),log2);
+                    logsService.addLog(user, log);
+                    logsService.addLog(marketL.getUser(), log2);
 
-                } else if (marketL.getStaAvailable()< market.getStaAvailable()){
+                } else if (marketL.getStaAvailable() < market.getStaAvailable()) {
 
                     double amount = marketL.getStaAvailable();
-                    market.setStaAvailable(market.getStaAvailable()- marketL.getStaAvailable());
+                    market.setStaAvailable(market.getStaAvailable() - marketL.getStaAvailable());
                     marketL.setStaAvailable(0);
                     marketL.setStatus("completed");
 
 
                     walletL.setSTA(amount);
-                    walletL.setMoney(walletL.getMoney()+ amount* marketL.getPrice());
-                    wallet.setMoney(wallet.getMoney()- amount* marketL.getPrice());
+                    walletL.setMoney(walletL.getMoney() + amount * marketL.getPrice());
+                    wallet.setMoney(wallet.getMoney() - amount * marketL.getPrice());
 
                     walletService.save(walletL);
                     walletService.save(wallet);
                     marketRepository.save(market);
                     marketRepository.save(marketL);
 
-                    Logs log = new Logs();
-                    Logs log2 = new Logs();
+                    Logs log = new Logs(market);
+                    Logs log2 = new Logs(marketL);
 
-                    log.setStatus(market.getStatus());
-                    log.setSta(market.getSta());
-                    log.setMessage(market.getType());
-                    log.setUser(user);
-                    log.setCreatedDate(market.getCreatedDate());
-                    log.setMoney(market.getPrice());
 
-                    log2.setStatus(marketL.getStatus());
-                    log2.setSta(marketL.getSta());
-                    log2.setMessage(marketL.getType());
-                    log2.setUser(marketL.getUser());
-                    log2.setCreatedDate(marketL.getCreatedDate());
-                    log2.setMoney(marketL.getPrice());
-
-                    logsService.addLog(user,log);
-                    logsService.addLog(marketL.getUser(),log2);
+                    logsService.addLog(user, log);
+                    logsService.addLog(marketL.getUser(), log2);
                 }
 
-            }else
-            if(marketL.getPrice()== market.getPrice() && marketL.getSta() != 0
-                    && marketL.getSta()!=0
+            } else if (marketL.getPrice() == market.getPrice() && marketL.getSta() != 0
+                    && marketL.getSta() != 0
                     && marketL.getType().equalsIgnoreCase("buy")
                     && market.getType().equalsIgnoreCase("sell")
-            ){
-                if( marketL.getStaAvailable() >= market.getStaAvailable()){
+            ) {
+                if (marketL.getStaAvailable() >= market.getStaAvailable()) {
 
                     double amount = market.getSta();
                     market.setStaAvailable(0);
                     market.setStatus("completed");
-                    marketL.setStaAvailable(marketL.getStaAvailable()-amount);
+                    marketL.setStaAvailable(marketL.getStaAvailable() - amount);
 
-                    walletL.setMoney(walletL.getMoney()+ amount * marketL.getPrice());
-                    wallet.setMoney(wallet.getMoney()- amount * marketL.getPrice());
-                    wallet.setSTA(amount);
 
-                    if(marketL.getStaAvailable()==0){
+                    wallet.setMoney(wallet.getMoney() + amount * marketL.getPrice());
+                    wallet.setSTA(wallet.getSTA()-amount);
+                    walletL.setSTA(walletL.getSTA()+amount);
+
+                    if (marketL.getStaAvailable() == 0) {
                         marketL.setStatus("completed");
                     }
 
@@ -198,135 +190,99 @@ public class MarketService {
                     marketRepository.save(market);
                     marketRepository.save(marketL);
 
-                    Logs log = new Logs();
-                    Logs log2 = new Logs();
+                    Logs log = new Logs(market);
+                    Logs log2 = new Logs(marketL);
 
-                    log.setStatus(market.getStatus());
-                    log.setSta(market.getSta());
-                    log.setMessage(market.getType());
-                    log.setUser(user);
-                    log.setCreatedDate(market.getCreatedDate());
-                    log.setMoney(market.getPrice());
 
-                    log2.setStatus(marketL.getStatus());
-                    log2.setSta(marketL.getSta());
-                    log2.setMessage(marketL.getType());
-                    log2.setUser(marketL.getUser());
-                    log2.setCreatedDate(marketL.getCreatedDate());
-                    log2.setMoney(marketL.getPrice());
+                    logsService.addLog(user, log);
+                    logsService.addLog(marketL.getUser(), log2);
 
-                    logsService.addLog(user,log);
-                    logsService.addLog(marketL.getUser(),log2);
-
-                } else if (marketL.getStaAvailable()< market.getStaAvailable()){
+                } else if (marketL.getStaAvailable() < market.getStaAvailable()) {
 
                     double amount = marketL.getStaAvailable();
-                    market.setStaAvailable(market.getStaAvailable()- marketL.getStaAvailable());
+
+                    market.setStaAvailable(market.getStaAvailable() - amount);
                     marketL.setStaAvailable(0);
                     marketL.setStatus("completed");
 
 
-                    walletL.setSTA(amount);
-                    walletL.setMoney(walletL.getMoney()+ amount* marketL.getPrice());
-                    wallet.setMoney(wallet.getMoney()- amount* marketL.getPrice());
+                    walletL.setSTA(walletL.getSTA()+ amount);
+                    walletL.setMoney(walletL.getMoney() + amount * marketL.getPrice());
+                    wallet.setMoney(wallet.getMoney() - amount * marketL.getPrice());
+                    wallet.setSTA(wallet.getSTA()+amount);
 
                     walletService.save(walletL);
                     walletService.save(wallet);
                     marketRepository.save(market);
                     marketRepository.save(marketL);
 
-                    Logs log = new Logs();
-                    Logs log2 = new Logs();
+                    Logs log = new Logs(market);
+                    Logs log2 = new Logs(marketL);
 
-                    log.setStatus(market.getStatus());
-                    log.setSta(market.getSta());
-                    log.setMessage(market.getType());
-                    log.setUser(user);
-                    log.setCreatedDate(market.getCreatedDate());
-                    log.setMoney(market.getPrice());
-
-                    log2.setStatus(marketL.getStatus());
-                    log2.setSta(marketL.getSta());
-                    log2.setMessage(marketL.getType());
-                    log2.setUser(marketL.getUser());
-                    log2.setCreatedDate(marketL.getCreatedDate());
-                    log2.setMoney(marketL.getPrice());
-
-                    logsService.addLog(user,log);
-                    logsService.addLog(marketL.getUser(),log2);
+                    logsService.addLog(user, log);
+                    logsService.addLog(marketL.getUser(), log2);
                 }
             }
 
         }
 
     }
-    public boolean checkMarketPrice(AddToMarketDto marketDto){
+
+    public boolean checkMarketPrice(AddToMarketDto marketDto) {
 
         List<Market> list = marketRepository.getAllByStatusOrderByCreatedDateDesc(marketDto.getStatus());
 
-       for (Market market : list){
-           if(marketDto.getSta()==0){
-               return false;
+        for (Market market : list) {
+            if (marketDto.getSta() == 0) {
+                return false;
 
-           }
+            }
 
-           if((marketDto.getPrice()== marketDto.getPrice())){
-               return true;
-           }
-       }
-    return  false;
-    }
-    public void marketAction( User user, AddToMarketDto marketDto){
-        Market list = new Market();
-        Wallet wallet = walletService.getUserWallet(user);
-        list.setCreatedDate(new Date());
-        list.setUser(user);
-        list.setSta(marketDto.getSta());
-        list.setPrice(marketDto.getPrice());
-
-        if(marketDto.getSta()==0){
-            list.setStatus("completed");
-        } else {
-            list.setStatus("selling");
-        }
-
-        list.setType("sell");
-
-        wallet.setSTA(wallet.getSTA()- marketDto.getSta());
-        walletService.save(wallet);
-
-        marketRepository.save(list);
-
-        Logs log = new Logs();
-
-        log.setStatus("success");
-        log.setSta(marketDto.getSta());
-        log.setMessage("sell sta");
-        log.setUser(user);
-        log.setCreatedDate(list.getCreatedDate());
-        log.setMoney(marketDto.getPrice());
-        logsService.addLog(user,log);
-    }
-
-    public List<MarketDto> getPlacingMarket(User user) {
-       List<Market> list = marketRepository.getAllByStatusOrderByCreatedDateDesc("placing");
-       List<Market> userList = marketRepository.getByUser(user);
-        Iterator<Market> listI = list.iterator();
-       Iterator<Market> userListI = userList.iterator();
-        List<MarketDto> marketDtos = new ArrayList<>();
-        while(listI.hasNext() && userListI.hasNext()) {
-            Market market = listI.next();
-            Market userMarket = userListI.next();
-            System.out.println("market"+ market.getId());
-
-            System.out.println("user"+ userMarket.getId());
-            if(!Objects.equals(market.getId(), userMarket.getId())){
-                System.out.println(market.getId());
-                System.out.println(userMarket.getId());
-                MarketDto marketDto = new MarketDto(market);
-                marketDtos.add(marketDto);
+            if ((marketDto.getPrice() == marketDto.getPrice())) {
+                return true;
             }
         }
-return marketDtos;
+        return false;
+    }
+
+
+    public List<MarketDto> getPlacingMarket(User user) {
+        List<Market> list = marketRepository.getAllByStatusOrderByCreatedDateDesc("placing");
+        List<Market> userList = marketRepository.getByUser(user);
+        list.removeAll(userList);
+        List<MarketDto> marketDtos = new ArrayList<>();
+        for (Market market : list) {
+            MarketDto marketDto = new MarketDto(market);
+            marketDtos.add(marketDto);
+        }
+
+
+        return marketDtos;
+    }
+
+    public List<MarketDto> getUserMarketByStatus(User user, String status) {
+        List<Market> userList = marketRepository.getAllByUserAndStatusOrderByCreatedDateDesc(user, status);
+
+        List<MarketDto> marketDtos = new ArrayList<>();
+        for (Market market : userList) {
+            MarketDto marketDto = new MarketDto(market);
+            marketDtos.add(marketDto);
+        }
+        return marketDtos;
+    }
+
+    public void cancelMarket(User user, Integer id){
+        Optional<Market> market = marketRepository.findById(id);
+        Wallet wallet = walletService.getUserWallet(market.get().getUser());
+
+        if(market.get().getType().equalsIgnoreCase("sell")){
+            wallet.setSTA(wallet.getSTA()+market.get().getSta());
+            market.get().setStatus("cancelled");
+            marketRepository.save(market.get());
+        } else {
+            market.get().setStatus("cancelled");
+            marketRepository.save(market.get());
+            wallet.setMoney(wallet.getMoney()+market.get().getSta()*market.get().getPrice());
+        }
     }
 }

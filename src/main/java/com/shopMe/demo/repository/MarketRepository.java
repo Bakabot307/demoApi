@@ -17,4 +17,6 @@ public interface MarketRepository extends JpaRepository<Market, Integer> {
     List<Market> findAllByUser(User user);
 
     List<Market> getByUser(User user);
+
+    List<Market> getAllByUserAndStatusOrderByCreatedDateDesc(User user, String status);
 }

@@ -3,6 +3,7 @@ package com.shopMe.demo.controllers;
 import com.shopMe.demo.common.ApiResponse;
 import com.shopMe.demo.dto.market.AddToMarketDto;
 import com.shopMe.demo.dto.market.MarketDto;
+import com.shopMe.demo.dto.market.UpdateMarketDto;
 import com.shopMe.demo.exceptions.AuthenticationFailException;
 import com.shopMe.demo.model.Market;
 import com.shopMe.demo.model.User;
@@ -41,7 +42,7 @@ public class MarketController {
         User user = authenticationService.getUser(token);
 
         marketService.AddToList(user,marketDto);
-        return new ResponseEntity<>(new ApiResponse(true, "nice"), HttpStatus.CREATED);
+        return new ResponseEntity<>(new ApiResponse(true, "added"), HttpStatus.CREATED);
     }
 
     @GetMapping("/")
@@ -50,6 +51,26 @@ public class MarketController {
         User user = authenticationService.getUser(token);
         List<MarketDto> marketDto = marketService.getPlacingMarket(user);
         return new ResponseEntity<>(marketDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/user")
+    public  ResponseEntity<List<MarketDto>> getUserMarketByStatus(@RequestParam("token") String token,String status) throws AuthenticationFailException {
+        authenticationService.authenticate(token);
+        User user = authenticationService.getUser(token);
+        List<MarketDto> marketDto = marketService.getUserMarketByStatus(user,status);
+        return new ResponseEntity<>(marketDto, HttpStatus.OK);
+    }
+
+    @PutMapping("/user")
+    public  ResponseEntity<ApiResponse> updateMarketForUser(@RequestParam("token") String token,@RequestBody UpdateMarketDto marketDto) throws AuthenticationFailException {
+        authenticationService.authenticate(token);
+        User user = authenticationService.getUser(token);
+        if (marketDto.getStatus().equalsIgnoreCase("cancelled")){
+            marketService.cancelMarket(user,marketDto.getId());
+            return new ResponseEntity<>(new ApiResponse(true,"cancelled"), HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(new ApiResponse(true,"no data"), HttpStatus.BAD_REQUEST);
     }
 
 

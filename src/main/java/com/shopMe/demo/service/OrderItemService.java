@@ -33,7 +33,8 @@ public class OrderItemService {
     @Autowired
     private ProductRepository productRepository;
 
-
+    @Autowired
+    private LogsService logsService;
 
     private WalletService walletService;
 
@@ -83,7 +84,7 @@ public class OrderItemService {
             long daysLeft = ChronoUnit.DAYS.between(today, claimDate);
             long daysBetween = ChronoUnit.DAYS.between(createdDate, today);
 
-            double profit,percentPerMonth;
+            double profit,percentPerMonth,profitNow;
             int investMonth;
 
             investMonth = orderItem.getProduct().getInvestMonth();
@@ -92,7 +93,8 @@ public class OrderItemService {
 
             percentPerMonth = orderItem.getProduct().getPercentage()/investMonth;
 
-            profit = orderItem.getProduct().getPrice()+(orderItem.getProduct().getPrice()*percentPerMonth/100*(int)month);
+            profit = orderItem.getProduct().getPrice()+(orderItem.getProduct().getPrice()*percentPerMonth/100*investMonth);
+            profitNow = orderItem.getProduct().getPrice()+(orderItem.getProduct().getPrice()*percentPerMonth/100*month);
 
 
             if(month>=investMonth){
@@ -100,11 +102,19 @@ public class OrderItemService {
                 orderItem.setStaProfit(profit);
                 Wallet wallet = walletService.getUserWallet(orderItem.getUser());
                 wallet.setSTA(profit);
+                Logs log = new Logs();
 
+                log.setStatus("success");
+                log.setSta(profit);
+                log.setMessage("Claimed profit");
+                log.setUser(orderItem.getUser());
+                log.setCreatedDate(new Date());
+                log.setMoney(0);
+                logsService.addLog(orderItem.getUser(),log);
                 walletService.save(wallet);
                 orderItemRepository.save(orderItem);
             } else {
-                orderItem.setStaProfit(profit);
+                orderItem.setStaProfit(profitNow);
                 orderItemRepository.save(orderItem);
 
             }
