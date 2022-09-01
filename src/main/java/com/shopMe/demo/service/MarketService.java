@@ -260,16 +260,21 @@ public class MarketService {
         return marketDtos;
     }
 
-    public List<MarketDto> getUserMarketByStatus(User user, String status) {
-        List<Market> userList = marketRepository.getAllByUserAndStatusOrderByCreatedDateDesc(user, status);
-
+    public List<MarketDto> getPlacingMarketByType(User user,String type) {
+        List<Market> list = marketRepository.getAllByStatusAndTypeOrderByPriceDesc("placing",type);
+        List<Market> userList = marketRepository.getByUser(user);
+        list.removeAll(userList);
         List<MarketDto> marketDtos = new ArrayList<>();
-        for (Market market : userList) {
+        for (Market market : list) {
             MarketDto marketDto = new MarketDto(market);
             marketDtos.add(marketDto);
         }
+
+
         return marketDtos;
     }
+
+
 
     public void cancelMarket(User user, Integer id){
         Optional<Market> market = marketRepository.findById(id);
@@ -284,5 +289,16 @@ public class MarketService {
             marketRepository.save(market.get());
             wallet.setMoney(wallet.getMoney()+market.get().getSta()*market.get().getPrice());
         }
+    }
+
+    public List<MarketDto> getUserMarketByStatus(User user, String status) {
+        List<Market> userList = marketRepository.getAllByUserAndStatusOrderByCreatedDateDesc(user,status);
+
+        List<MarketDto> marketDtos = new ArrayList<>();
+        for (Market market : userList) {
+            MarketDto marketDto = new MarketDto(market);
+            marketDtos.add(marketDto);
+        }
+        return marketDtos;
     }
 }

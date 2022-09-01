@@ -46,12 +46,14 @@ public class MarketController {
     }
 
     @GetMapping("/")
-    public  ResponseEntity<List<MarketDto>> getMarketForUser(@RequestParam("token") String token) throws AuthenticationFailException {
+    public  ResponseEntity<List<MarketDto>> getMarketForUserByType(@RequestParam("token") String token,@RequestParam String type) throws AuthenticationFailException {
         authenticationService.authenticate(token);
         User user = authenticationService.getUser(token);
-        List<MarketDto> marketDto = marketService.getPlacingMarket(user);
+        List<MarketDto> marketDto = marketService.getPlacingMarketByType(user,type);
         return new ResponseEntity<>(marketDto, HttpStatus.OK);
     }
+
+
 
     @GetMapping("/user")
     public  ResponseEntity<List<MarketDto>> getUserMarketByStatus(@RequestParam("token") String token,String status) throws AuthenticationFailException {
