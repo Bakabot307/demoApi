@@ -31,6 +31,7 @@ public class MarketService {
         Wallet wallet = walletService.getUserWallet(user);
 
         List<Market> marketList = marketRepository.findAllByUser(user);
+
         boolean updated = false;
 
         for (Market marketL : marketList) {
@@ -85,6 +86,10 @@ public class MarketService {
         Wallet wallet = walletService.getUserWallet(user);
 
         List<Market> list = marketRepository.getAllByStatusOrderByCreatedDateDesc(status);
+
+        List<Market> userList = marketRepository.getByUser(user);
+
+        list.removeAll(userList);
 
         for (Market marketL : list) {
             Wallet walletL = walletService.getUserWallet(marketL.getUser());
