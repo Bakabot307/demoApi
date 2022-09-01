@@ -2,6 +2,7 @@ package com.shopMe.demo.service;
 
 
 import com.shopMe.demo.dto.market.AddToMarketDto;
+import com.shopMe.demo.dto.market.MarketDto;
 import com.shopMe.demo.model.Logs;
 import com.shopMe.demo.model.Market;
 import com.shopMe.demo.model.User;
@@ -10,9 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.shopMe.demo.repository.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import javax.validation.constraints.NotNull;
+import java.util.*;
 
 @Service
 public class MarketService {
@@ -308,4 +308,25 @@ public class MarketService {
         logsService.addLog(user,log);
     }
 
+    public List<MarketDto> getPlacingMarket(User user) {
+       List<Market> list = marketRepository.getAllByStatusOrderByCreatedDateDesc("placing");
+       List<Market> userList = marketRepository.getByUser(user);
+        Iterator<Market> listI = list.iterator();
+       Iterator<Market> userListI = userList.iterator();
+        List<MarketDto> marketDtos = new ArrayList<>();
+        while(listI.hasNext() && userListI.hasNext()) {
+            Market market = listI.next();
+            Market userMarket = userListI.next();
+            System.out.println("market"+ market.getId());
+
+            System.out.println("user"+ userMarket.getId());
+            if(!Objects.equals(market.getId(), userMarket.getId())){
+                System.out.println(market.getId());
+                System.out.println(userMarket.getId());
+                MarketDto marketDto = new MarketDto(market);
+                marketDtos.add(marketDto);
+            }
+        }
+return marketDtos;
+    }
 }

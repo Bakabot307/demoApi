@@ -49,7 +49,7 @@ public class OrderItemService {
         WalletDto walletDto = walletService.getUserWalletDto(user);
         double sta;
         sta = walletDto.getSTA()-product.get().getPrice();
-        walletDto.setSTA(product.get().getPrice());
+        walletDto.setSTA(sta);
         walletService.updateWallet(user,walletDto);
         OrderItem orderItem = new OrderItem();
         LocalDate claimDate;
@@ -93,9 +93,7 @@ public class OrderItemService {
             percentPerMonth = orderItem.getProduct().getPercentage()/investMonth;
 
             profit = orderItem.getProduct().getPrice()+(orderItem.getProduct().getPrice()*percentPerMonth/100*(int)month);
-            System.out.println(orderItem.getProduct().getPrice());
-            System.out.println(percentPerMonth);
-            System.out.println(month);
+
 
             if(month>=investMonth){
                 orderItem.setStatus("completed");
@@ -103,9 +101,8 @@ public class OrderItemService {
                 orderItemRepository.save(orderItem);
             } else {
                 orderItem.setStaProfit(profit);
-                System.out.println(profit);
                 orderItemRepository.save(orderItem);
-                System.out.println("not done");
+
             }
 
 

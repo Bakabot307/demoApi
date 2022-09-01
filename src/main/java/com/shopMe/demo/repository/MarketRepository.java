@@ -15,4 +15,6 @@ public interface MarketRepository extends JpaRepository<Market, Integer> {
     Market findByUser(User user);
 
     List<Market> findAllByUser(User user);
+
+    List<Market> getByUser(User user);
 }
