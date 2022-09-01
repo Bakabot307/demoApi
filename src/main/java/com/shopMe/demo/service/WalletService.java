@@ -124,4 +124,8 @@ public class WalletService {
         String message = "sending";
         logsService.StaSendingLog(user,OWallet2.get().getUser().getId(),message,sta,"success");
     }
+
+    public void save(Wallet wallet) {
+        walletRepository.save(wallet);
+    }
 }

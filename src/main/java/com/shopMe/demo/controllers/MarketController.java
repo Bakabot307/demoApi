@@ -1,17 +1,19 @@
 package com.shopMe.demo.controllers;
 
 import com.shopMe.demo.common.ApiResponse;
+import com.shopMe.demo.dto.market.AddToMarketDto;
+import com.shopMe.demo.exceptions.AuthenticationFailException;
+import com.shopMe.demo.model.Market;
 import com.shopMe.demo.model.User;
 import com.shopMe.demo.model.Wallet;
+import com.shopMe.demo.service.AuthenticationService;
 import com.shopMe.demo.service.MarketService;
 import com.shopMe.demo.service.UserService;
 import com.shopMe.demo.service.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -26,13 +28,19 @@ public class MarketController {
     private WalletService walletService;
 
     @Autowired
+    private AuthenticationService authenticationService;
+
+    @Autowired
     UserService userService;
 
     @PostMapping("/add")
-    public  ResponseEntity<ApiResponse> AddMarket(){
+    public  ResponseEntity<ApiResponse> AddMarket(@RequestParam("token") String token, @RequestBody AddToMarketDto marketDto) throws AuthenticationFailException {
+        authenticationService.authenticate(token);
+        User user = authenticationService.getUser(token);
 
-        Optional<User> user = userService.getById(1);
-        marketService.AddToList(user.get());
+        marketService.AddToList(user,marketDto);
         return new ResponseEntity<>(new ApiResponse(true, "nice"), HttpStatus.CREATED);
     }
+
+
 }

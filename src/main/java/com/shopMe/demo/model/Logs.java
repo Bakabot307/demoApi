@@ -30,6 +30,17 @@ public class Logs {
     public Logs() {
     }
 
+    public Logs( User user, Logs logs) {
+        this.id = logs.getId();
+        this.status = logs.getStatus();
+        this.sta = logs.getSta();
+        this.money = logs.getSta();
+        this.message = logs.getMessage();
+        this.createdDate = logs.getCreatedDate();
+        this.receiverId = logs.getReceiverId();
+        this.user = user;
+    }
+
     public Logs(String status, String message, Date createdDate, User user) {
         this.status = status;
         this.message = message;

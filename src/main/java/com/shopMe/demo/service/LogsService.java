@@ -41,6 +41,11 @@ public class LogsService {
         logsRepository.save(log);
     }
 
+    public void addLog(User user, Logs logs ){
+        Logs log = new Logs(user,logs);
+        logsRepository.save(log);
+    }
+
     public void addExchangeMoneyToStaLog(User user, String message, double sta, String status ){
         Logs log = new Logs();
         log.setSta(sta);

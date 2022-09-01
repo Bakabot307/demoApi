@@ -1,6 +1,7 @@
 package com.shopMe.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.shopMe.demo.dto.market.AddToMarketDto;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -13,6 +14,8 @@ public class Market {
     private Integer id;
 
     private double sta;
+
+    private double staAvailable;
 
     private double price;
 
@@ -37,7 +40,6 @@ public class Market {
 
     public Market() {
     }
-
 
 
     public double getSta() {
@@ -88,4 +90,11 @@ public class Market {
         this.user = user;
     }
 
+    public double getStaAvailable() {
+        return staAvailable;
+    }
+
+    public void setStaAvailable(double staAvailable) {
+        this.staAvailable = staAvailable;
+    }
 }
