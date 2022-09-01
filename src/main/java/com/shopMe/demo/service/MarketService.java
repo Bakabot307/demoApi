@@ -35,7 +35,7 @@ public class MarketService {
         boolean updated = false;
 
         for (Market marketL : marketList) {
-            if (marketL.getPrice() == marketDto.getPrice() && marketL.getStatus().equalsIgnoreCase("placing")
+            if (marketL.getPrice() == marketDto.getPrice() && marketL.getStatus().equalsIgnoreCase(marketDto.getStatus())
                     && marketL.getType().equalsIgnoreCase(marketDto.getType())) {
                 marketL.setSta(marketL.getSta() + marketDto.getSta());
                 marketL.setStaAvailable(marketL.getStaAvailable() + marketDto.getSta());
@@ -175,7 +175,7 @@ public class MarketService {
                     && market.getType().equalsIgnoreCase("sell")
             ) {
                 if (marketL.getStaAvailable() >= market.getStaAvailable()) {
-
+                    System.out.println("sell");
                     double amount = market.getSta();
                     market.setStaAvailable(0);
                     market.setStatus("completed");
@@ -289,10 +289,11 @@ public class MarketService {
             wallet.setSTA(wallet.getSTA()+market.get().getSta());
             market.get().setStatus("cancelled");
             marketRepository.save(market.get());
-        } else {
+        } else if (market.get().getType().equalsIgnoreCase("buy")){
             market.get().setStatus("cancelled");
-            marketRepository.save(market.get());
             wallet.setMoney(wallet.getMoney()+market.get().getSta()*market.get().getPrice());
+            marketRepository.save(market.get());
+
         }
     }
 
