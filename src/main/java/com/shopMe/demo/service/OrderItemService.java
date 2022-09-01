@@ -98,6 +98,10 @@ public class OrderItemService {
             if(month>=investMonth){
                 orderItem.setStatus("completed");
                 orderItem.setStaProfit(profit);
+                Wallet wallet = walletService.getUserWallet(orderItem.getUser());
+                wallet.setSTA(profit);
+
+                walletService.save(wallet);
                 orderItemRepository.save(orderItem);
             } else {
                 orderItem.setStaProfit(profit);
