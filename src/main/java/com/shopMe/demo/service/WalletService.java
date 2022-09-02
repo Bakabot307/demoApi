@@ -75,7 +75,6 @@ public class WalletService {
         OWallet.get().setPendingMoney(withdrawDto.getMoney());
         OWallet.get().setMoney(walletMoney);
         walletRepository.save(OWallet.get());
-
         RequestDto requestDto = new RequestDto();
         requestDto.setStatus("pending");
         requestDto.setMoney(withdrawDto.getMoney());

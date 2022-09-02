@@ -13,7 +13,6 @@ public class RequestDto {
     private Integer id;
     private String status;
 
-    private double sta;
 
     private double money;
 
@@ -42,13 +41,6 @@ public class RequestDto {
         this.status = status;
     }
 
-    public double getSta() {
-        return sta;
-    }
-
-    public void setSta(double sta) {
-        this.sta = sta;
-    }
 
     public double getMoney() {
         return money;
