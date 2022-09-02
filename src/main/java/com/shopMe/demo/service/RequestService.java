@@ -41,8 +41,14 @@ public class RequestService {
 
         Optional<Wallet> OWallet  = walletRepository.findByUser(user);
         Request  request = new Request();
+        if(requestDto.getType().equalsIgnoreCase("withdraw")){
+            OWallet.get().setMoney(OWallet.get().getMoney()-requestDto.getMoney());
+            OWallet.get().setPendingMoney(OWallet.get().getPendingMoney()+ requestDto.getMoney());
+            walletRepository.save(OWallet.get());
+        }
+
         request.setMoney(requestDto.getMoney());
-        request.setStatus(request.getStatus());
+        request.setStatus(requestDto.getStatus());
         request.setMessage(requestDto.getMessage());
         request.setUser(user);
         request.setWallet(OWallet.get());
@@ -65,20 +71,27 @@ public class RequestService {
         Request request = ORequest.get();
 
         Optional<Wallet> wallet = walletRepository.findByUser(user);
-        if(requestDto.getStatus().equalsIgnoreCase("cancelled")){
-                request.setStatus("cancelled");
+        if(requestDto.getStatus().equalsIgnoreCase("rejected")){
+            if(request.getType().equalsIgnoreCase("deposit")){
+               request.setStatus(requestDto.getStatus());
                 requestRepository.save(request);
+            } else if (request.getType().equalsIgnoreCase("withdraw")) {
+                wallet.get().setPendingMoney(wallet.get().getPendingMoney()-requestDto.getMoney());
+                wallet.get().setMoney(wallet.get().getMoney()+ request.getMoney());
 
-            Logs log = new Logs();
-            log.setMoney(requestDto.getMoney());
-            log.setCreatedDate(request.getCreatedDate());
-            log.setMessage(request.getMessage());
-            log.setUser(user);
-            log.setStatus(requestDto.getStatus());
+                walletRepository.save(wallet.get());
+                requestRepository.save(request);
+                Logs log = new Logs();
+                log.setMoney(requestDto.getMoney());
+                log.setCreatedDate(request.getCreatedDate());
+                log.setMessage(request.getMessage());
+                log.setUser(user);
+                log.setStatus(requestDto.getStatus());
 
-            logsService.addLog(user,log);
+                logsService.addLog(user,log);
+            }
 
-        } else if(requestDto.getStatus().equalsIgnoreCase("rejected")){
+        } else if(requestDto.getStatus().equalsIgnoreCase("accepted")){
             if(request.getType().equalsIgnoreCase("deposit")){
                wallet.get().setMoney(wallet.get().getMoney()+request.getMoney());
                 requestRepository.save(request);

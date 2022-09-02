@@ -18,7 +18,6 @@ public class RequestDto {
 
     private String message;
 
-    private Integer userId;
 
     private String type;
 
@@ -58,13 +57,6 @@ public class RequestDto {
         this.message = message;
     }
 
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
 
     public String getType() {
         return type;
