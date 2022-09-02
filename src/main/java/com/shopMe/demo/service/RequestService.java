@@ -3,6 +3,7 @@ package com.shopMe.demo.service;
 import com.shopMe.demo.dto.Request.RequestDataDto;
 import com.shopMe.demo.dto.Request.RequestDto;
 import com.shopMe.demo.dto.Request.RequestUpdateDto;
+import com.shopMe.demo.model.Logs;
 import com.shopMe.demo.model.Request;
 import com.shopMe.demo.model.User;
 import com.shopMe.demo.model.Wallet;
@@ -24,6 +25,9 @@ public class RequestService {
     private UserRepository userRepository;
 
     @Autowired
+    private LogsService logsService;
+
+    @Autowired
     private WalletRepository walletRepository;
     public List<Request> getAllByUserandStatus(User user, String status){
 
@@ -37,15 +41,22 @@ public class RequestService {
 
         Optional<Wallet> OWallet  = walletRepository.findByUser(user);
         Request  request = new Request();
-
         request.setMoney(requestDto.getMoney());
-        request.setSta(requestDto.getSta());
-        request.setStatus("pending");
+        request.setStatus(request.getStatus());
         request.setMessage(requestDto.getMessage());
         request.setUser(user);
         request.setWallet(OWallet.get());
         request.setCreatedDate(new Date());
+        request.setType(requestDto.getType());
 
+        Logs log = new Logs();
+        log.setMoney(requestDto.getMoney());
+        log.setCreatedDate(request.getCreatedDate());
+        log.setMessage(requestDto.getMessage());
+        log.setUser(user);
+        log.setStatus(requestDto.getStatus());
+
+        logsService.addLog(user,log);
         requestRepository.save(request);
     }
 
@@ -53,13 +64,52 @@ public class RequestService {
         Optional<Request> ORequest  = requestRepository.findById(requestDto.getId());
         Request request = ORequest.get();
 
-        request.setStatus(requestDto.getStatus());
-        request.setMoney(requestDto.getMoney());
-        request.setSta(requestDto.getSta());
-        request.setCheckedDate(new Date());
+        Optional<Wallet> wallet = walletRepository.findByUser(user);
+        if(requestDto.getStatus().equalsIgnoreCase("cancelled")){
+                request.setStatus("cancelled");
+                requestRepository.save(request);
 
-        requestRepository.save(request);
+            Logs log = new Logs();
+            log.setMoney(requestDto.getMoney());
+            log.setCreatedDate(request.getCreatedDate());
+            log.setMessage(request.getMessage());
+            log.setUser(user);
+            log.setStatus(requestDto.getStatus());
+
+            logsService.addLog(user,log);
+
+        } else if(requestDto.getStatus().equalsIgnoreCase("rejected")){
+            if(request.getType().equalsIgnoreCase("deposit")){
+               wallet.get().setMoney(wallet.get().getMoney()+request.getMoney());
+                requestRepository.save(request);
+                Logs log = new Logs();
+                log.setMoney(requestDto.getMoney());
+                log.setCreatedDate(request.getCreatedDate());
+                log.setMessage(request.getMessage());
+                log.setUser(user);
+                log.setStatus(requestDto.getStatus());
+
+                logsService.addLog(user,log);
+            } else if (request.getType().equalsIgnoreCase("withdraw")) {
+                wallet.get().setPendingMoney(wallet.get().getPendingMoney()-request.getMoney());
+                requestRepository.save(request);
+                Logs log = new Logs();
+                log.setMoney(requestDto.getMoney());
+                log.setCreatedDate(request.getCreatedDate());
+                log.setMessage(request.getMessage());
+                log.setUser(user);
+                log.setStatus(requestDto.getStatus());
+
+                logsService.addLog(user,log);
+            }
+        }
+
     }
+
+
+
+
+
 
 
     public List<Request> getAllByStatus(String status) {

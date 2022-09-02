@@ -52,6 +52,12 @@ public class MarketController {
         List<MarketDto> marketDto = marketService.getPlacingMarketByType(user,type);
         return new ResponseEntity<>(marketDto, HttpStatus.OK);
     }
+    @GetMapping("/all")
+    public  ResponseEntity<List<MarketDto>> getAllByStatus(@RequestParam("status") String status) throws AuthenticationFailException {
+        List<MarketDto> marketDto = marketService.getPlacingMarketByStatus(status);
+        return new ResponseEntity<>(marketDto, HttpStatus.OK);
+    }
+
 
 
 

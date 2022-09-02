@@ -91,16 +91,8 @@ public class RequestController {
         if(Role.admin!=user.getRole()){
             return new ResponseEntity<>(new ApiResponse(true, "need to be admin"), HttpStatus.FORBIDDEN);
         }
-        if(requestDto.getStatus().equalsIgnoreCase("accept")){
-            walletService.depositWallet(requestDto.getMoney(),user2.get());
-            requestService.updateRequest(user,requestDto);
-            logsService.addLogToUserWithMoney(user2.get(),"Deposit",requestDto.getMoney(),"success");
-            return new ResponseEntity<>(new ApiResponse(true, "accepted request"), HttpStatus.OK);
-        } else if (requestDto.getStatus().equalsIgnoreCase("decline")){
-            requestService.updateRequest(user,requestDto);
-            logsService.addLogToUserWithMoney(user2.get(),"Deposit",requestDto.getMoney(),"failed");
-            return new ResponseEntity<>(new ApiResponse(true, "declined request"), HttpStatus.OK);
-        }
+
+      requestService.updateRequest(user,requestDto);
 
         return new ResponseEntity<>(new ApiResponse(true, "failed"), HttpStatus.BAD_REQUEST);
     }

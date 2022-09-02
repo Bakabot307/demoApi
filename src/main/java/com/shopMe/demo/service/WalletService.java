@@ -1,6 +1,7 @@
 package com.shopMe.demo.service;
 
 import com.shopMe.demo.dto.Request.RequestDto;
+import com.shopMe.demo.dto.Request.WithdrawDto;
 import com.shopMe.demo.dto.wallet.WalletDto;
 import com.shopMe.demo.model.User;
 import com.shopMe.demo.model.Wallet;
@@ -67,18 +68,18 @@ public class WalletService {
 
     }
 
-    public void requestWithdraw(double money, User user) {
+    public void requestWithdraw(WithdrawDto withdrawDto, User user) {
         Optional<Wallet> OWallet = walletRepository.findByUser(user);
         double walletMoney;
-        walletMoney = OWallet.get().getMoney()-money;
-        OWallet.get().setPendingMoney(money);
+        walletMoney = OWallet.get().getMoney()-withdrawDto.getMoney();
+        OWallet.get().setPendingMoney(withdrawDto.getMoney());
         OWallet.get().setMoney(walletMoney);
         walletRepository.save(OWallet.get());
 
         RequestDto requestDto = new RequestDto();
         requestDto.setStatus("pending");
-        requestDto.setMoney(money);
-        requestDto.setMessage("withdraw");
+        requestDto.setMoney(withdrawDto.getMoney());
+        requestDto.setMessage(withdrawDto.getMessage());
         requestService.addRequest(user,requestDto);
     }
 
@@ -122,6 +123,7 @@ public class WalletService {
         walletRepository.save(OWallet2.get());
 
         String message = "send";
+        logsService.StaSendingLog(OWallet2.get().getUser(),user.getId(),"received",sta,"success");
         logsService.StaSendingLog(user,OWallet2.get().getUser().getId(),message,sta,"success");
     }
 

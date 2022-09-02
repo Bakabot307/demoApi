@@ -7,11 +7,8 @@ public class RequestUpdateDto {
 
     private String status;
 
-    private double sta;
 
     private double money;
-
-    private String message;
 
     private Integer userId;
 
@@ -34,13 +31,6 @@ public class RequestUpdateDto {
         this.status = status;
     }
 
-    public double getSta() {
-        return sta;
-    }
-
-    public void setSta(double sta) {
-        this.sta = sta;
-    }
 
     public double getMoney() {
         return money;
@@ -48,14 +38,6 @@ public class RequestUpdateDto {
 
     public void setMoney(double money) {
         this.money = money;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public Integer getUserId() {

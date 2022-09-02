@@ -251,10 +251,8 @@ public class MarketService {
     }
 
 
-    public List<MarketDto> getPlacingMarket(User user) {
-        List<Market> list = marketRepository.getAllByStatusOrderByCreatedDateDesc("placing");
-        List<Market> userList = marketRepository.getByUser(user);
-        list.removeAll(userList);
+    public List<MarketDto> getPlacingMarketByStatus(String status) {
+        List<Market> list = marketRepository.getAllByStatusOrderByCreatedDateDesc(status);
         List<MarketDto> marketDtos = new ArrayList<>();
         for (Market market : list) {
             MarketDto marketDto = new MarketDto(market);

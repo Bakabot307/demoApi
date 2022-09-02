@@ -2,6 +2,7 @@ package com.shopMe.demo.controllers;
 
 import com.shopMe.demo.common.ApiResponse;
 import com.shopMe.demo.dto.Request.RequestDto;
+import com.shopMe.demo.dto.Request.WithdrawDto;
 import com.shopMe.demo.dto.cart.AddToCartDto;
 import com.shopMe.demo.dto.cart.CartDto;
 import com.shopMe.demo.dto.product.ProductDto;
@@ -116,16 +117,16 @@ public class WalletController {
     }
 
     @PutMapping("/requestWithdraw")
-    public ResponseEntity<ApiResponse> requestWithdraw(@RequestParam("token") String token,@RequestParam("money") double money) throws AuthenticationFailException {
+    public ResponseEntity<ApiResponse> requestWithdraw(@RequestParam("token") String token,@RequestBody WithdrawDto withdrawDto) throws AuthenticationFailException {
         authenticationService.authenticate(token);
         // get the user
         User user = authenticationService.getUser(token);
 
         // get items in the cart for the user.
-        walletService.requestWithdraw(money,user);
+        walletService.requestWithdraw(withdrawDto,user);
 
-        String message = "withdraw " + money;
-        logsService.addLogToUserWithMoney(user,message,money,"added to request");
+        String message = "withdraw";
+        logsService.addLogToUserWithMoney(user,message,withdrawDto.getMoney(),"pending");
         return new ResponseEntity<>(new ApiResponse(true, message), HttpStatus.OK);
     }
 
