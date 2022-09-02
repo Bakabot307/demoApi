@@ -74,15 +74,24 @@ public class RequestService {
         if(requestDto.getStatus().equalsIgnoreCase("rejected")){
             if(request.getType().equalsIgnoreCase("deposit")){
                request.setStatus(requestDto.getStatus());
+               request.setCheckedDate(new Date());
+                request.setStatus(requestDto.getStatus());
                 requestRepository.save(request);
             } else if (request.getType().equalsIgnoreCase("withdraw")) {
-                wallet.get().setPendingMoney(wallet.get().getPendingMoney()-requestDto.getMoney());
+
+                System.out.println("withdraw");
+                System.out.println(request.getMoney());
+                System.out.println(wallet.get().getPendingMoney());
+                wallet.get().setPendingMoney(wallet.get().getPendingMoney()-request.getMoney());
                 wallet.get().setMoney(wallet.get().getMoney()+ request.getMoney());
+
+                request.setCheckedDate(new Date());
+                request.setStatus(requestDto.getStatus());
 
                 walletRepository.save(wallet.get());
                 requestRepository.save(request);
                 Logs log = new Logs();
-                log.setMoney(requestDto.getMoney());
+                log.setMoney(request.getMoney());
                 log.setCreatedDate(request.getCreatedDate());
                 log.setMessage(request.getMessage());
                 log.setUser(user);
@@ -94,9 +103,11 @@ public class RequestService {
         } else if(requestDto.getStatus().equalsIgnoreCase("accepted")){
             if(request.getType().equalsIgnoreCase("deposit")){
                wallet.get().setMoney(wallet.get().getMoney()+request.getMoney());
+                request.setCheckedDate(new Date());
+                request.setStatus(requestDto.getStatus());
                 requestRepository.save(request);
                 Logs log = new Logs();
-                log.setMoney(requestDto.getMoney());
+                log.setMoney(request.getMoney());
                 log.setCreatedDate(request.getCreatedDate());
                 log.setMessage(request.getMessage());
                 log.setUser(user);
@@ -105,9 +116,11 @@ public class RequestService {
                 logsService.addLog(user,log);
             } else if (request.getType().equalsIgnoreCase("withdraw")) {
                 wallet.get().setPendingMoney(wallet.get().getPendingMoney()-request.getMoney());
+                request.setCheckedDate(new Date());
+                request.setStatus(requestDto.getStatus());
                 requestRepository.save(request);
                 Logs log = new Logs();
-                log.setMoney(requestDto.getMoney());
+                log.setMoney(request.getMoney());
                 log.setCreatedDate(request.getCreatedDate());
                 log.setMessage(request.getMessage());
                 log.setUser(user);

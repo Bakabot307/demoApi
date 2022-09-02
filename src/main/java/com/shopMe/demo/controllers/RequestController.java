@@ -91,7 +91,7 @@ public class RequestController {
         if(Role.admin!=user.getRole()){
             return new ResponseEntity<>(new ApiResponse(true, "need to be admin"), HttpStatus.FORBIDDEN);
         } else {
-            requestService.updateRequest(user,requestDto);
+            requestService.updateRequest(user2.get(),requestDto);
             return new ResponseEntity<>(new ApiResponse(true, "updated"), HttpStatus.OK);
         }
     }
