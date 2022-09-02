@@ -90,11 +90,10 @@ public class RequestController {
 
         if(Role.admin!=user.getRole()){
             return new ResponseEntity<>(new ApiResponse(true, "need to be admin"), HttpStatus.FORBIDDEN);
+        } else {
+            requestService.updateRequest(user,requestDto);
+            return new ResponseEntity<>(new ApiResponse(true, "updated"), HttpStatus.OK);
         }
-
-      requestService.updateRequest(user,requestDto);
-
-        return new ResponseEntity<>(new ApiResponse(true, "failed"), HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("/payout")
