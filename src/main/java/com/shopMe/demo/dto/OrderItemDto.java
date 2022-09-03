@@ -20,6 +20,9 @@ public class OrderItemDto {
     @Column(name = "staProfit")
     private @NotNull double staProfit;
 
+    @Column(name = "price")
+    private @NotNull double price;
+
     @Column(name = "created_date")
     private Date createdDate;
 
@@ -38,6 +41,7 @@ public class OrderItemDto {
     public OrderItemDto(OrderItem orderItem) {
         this.id = orderItem.getId();
         this.quantity = orderItem.getQuantity();
+        this.price = orderItem.getProduct().getPrice();
         this.staProfit = orderItem.getStaProfit();
         this.createdDate = orderItem.getCreatedDate();
         this.claimDate = orderItem.getClaimDate();
