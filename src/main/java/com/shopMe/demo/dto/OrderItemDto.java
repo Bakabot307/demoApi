@@ -113,4 +113,12 @@ public class OrderItemDto {
     public void setProductId(Integer productId) {
         this.productId = productId;
     }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
 }
