@@ -64,6 +64,7 @@ public class RequestController {
             requestDto.setMoney(request.getMoney());
             requestDto.setCheckedDate(request.getCheckedDate());
             requestDto.setUserId(request.getUser().getId());
+            requestDto.setType(request.getType());
 
 
             requestDtos.add(requestDto);
