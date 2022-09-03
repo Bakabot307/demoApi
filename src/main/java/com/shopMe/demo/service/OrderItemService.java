@@ -95,7 +95,7 @@ logsService.addLog(log);
 
             percentPerMonth = orderItem.getProduct().getPercentage()/investMonth;
 
-            profit = orderItem.getProduct().getPrice()+(orderItem.getProduct().getPrice()*percentPerMonth/100*investMonth);
+            profit = (orderItem.getProduct().getPrice()*percentPerMonth/100*investMonth);
             profitNow = orderItem.getProduct().getPrice()+(orderItem.getProduct().getPrice()*percentPerMonth/100*month);
 
 
@@ -103,7 +103,7 @@ logsService.addLog(log);
                 orderItem.setStatus("completed");
                 orderItem.setStaProfit(profit);
                 Wallet wallet = walletService.getUserWallet(orderItem.getUser());
-                wallet.setSTA(profit);
+                wallet.setSTA(wallet.getSTA()+profit);
                 Logs log = new Logs();
 
                 log.setStatus("success");
