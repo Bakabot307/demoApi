@@ -55,7 +55,7 @@ public class WalletController {
         walletService.createWallet(user);
 
         // return response
-        logsService.addLogToUser(user,"created new wallet","success");
+        logsService.addLogToUser(user,"created new wallet","success","create");
         return new ResponseEntity<>(new ApiResponse(true, "Created wallet"), HttpStatus.CREATED);
 
 
@@ -83,7 +83,7 @@ public class WalletController {
         // get items in the cart for the user.
         walletService.depositWallet(money,user);
         String message = "deposited " + money;
-        logsService.addLogToUserWithMoney(user,message,money,"success");
+        logsService.addLogToUserWithMoney(user,message,money,"success","deposit");
         return new ResponseEntity<>(new ApiResponse(true, message), HttpStatus.OK);
     }
 
@@ -126,7 +126,7 @@ public class WalletController {
         walletService.requestWithdraw(withdrawDto,user);
 
         String message = "withdraw";
-        logsService.addLogToUserWithMoney(user,message,withdrawDto.getMoney(),"pending");
+        logsService.addLogToUserWithMoney(user,message,withdrawDto.getMoney(),"pending","withdraw");
         return new ResponseEntity<>(new ApiResponse(true, message), HttpStatus.OK);
     }
 

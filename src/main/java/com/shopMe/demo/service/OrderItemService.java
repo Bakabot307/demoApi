@@ -68,6 +68,14 @@ public class OrderItemService {
 
         orderItemRepository.save(orderItem);
 
+        Logs log = new Logs();
+        log.setCreatedDate(orderItem.getCreatedDate());
+        log.setSta(orderItem.getPrice());
+        log.setStatus(orderItem.getStatus());
+        log.setUser(user);
+        log.setType("Investing");
+        log.setMessage("Investing");
+logsService.addLog(log);
     }
 
     public void checkOrderTime() {
@@ -110,7 +118,8 @@ public class OrderItemService {
                 log.setUser(orderItem.getUser());
                 log.setCreatedDate(new Date());
                 log.setMoney(0);
-                logsService.addLog(orderItem.getUser(),log);
+                log.setType("claim");
+                logsService.addLog(log);
                 walletService.save(wallet);
                 orderItemRepository.save(orderItem);
             } else {

@@ -73,7 +73,8 @@ public class MarketService {
             log.setUser(user);
             log.setCreatedDate(list.getCreatedDate());
             log.setMoney(marketDto.getPrice());
-            logsService.addLog(user, log);
+            log.setType(marketDto.getType());
+            logsService.addLog(log);
 
 
             if (checkMarketPrice(marketDto)) {
@@ -133,6 +134,7 @@ public class MarketService {
                     log.setUser(user);
                     log.setCreatedDate(market.getCreatedDate());
                     log.setMoney(market.getPrice());
+                    log.setType(market.getType());
 
                     log2.setStatus(marketL.getStatus());
                     log2.setSta(marketL.getSta());
@@ -140,9 +142,11 @@ public class MarketService {
                     log2.setUser(marketL.getUser());
                     log2.setCreatedDate(marketL.getCreatedDate());
                     log2.setMoney(marketL.getPrice());
+                    log2.setType(marketL.getType());
 
-                    logsService.addLog(user, log);
-                    logsService.addLog(marketL.getUser(), log2);
+
+                    logsService.addLog(log);
+                    logsService.addLog(log2);
 
                 } else if (marketL.getStaAvailable() < market.getStaAvailable()) {
 
@@ -165,8 +169,8 @@ public class MarketService {
                     Logs log2 = new Logs(marketL);
 
 
-                    logsService.addLog(user, log);
-                    logsService.addLog(marketL.getUser(), log2);
+                    logsService.addLog(log);
+                    logsService.addLog(log2);
                 }
 
             } else if (marketL.getPrice() == market.getPrice() && marketL.getSta() != 0
@@ -199,8 +203,8 @@ public class MarketService {
                     Logs log2 = new Logs(marketL);
 
 
-                    logsService.addLog(user, log);
-                    logsService.addLog(marketL.getUser(), log2);
+                    logsService.addLog(log);
+                    logsService.addLog(log2);
 
                 } else if (marketL.getStaAvailable() < market.getStaAvailable()) {
 
@@ -224,8 +228,8 @@ public class MarketService {
                     Logs log = new Logs(market);
                     Logs log2 = new Logs(marketL);
 
-                    logsService.addLog(user, log);
-                    logsService.addLog(marketL.getUser(), log2);
+                    logsService.addLog(log);
+                    logsService.addLog(log2);
                 }
             }
 

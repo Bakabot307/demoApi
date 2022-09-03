@@ -32,18 +32,17 @@ public class LogsService {
        return listLog;
     }
 
-    public void addLogToUser(User user, String message, String status ){
-        Logs log = new Logs(status, message,new Date(),user);
+    public void addLogToUser(User user, String message, String status,String type ){
+        Logs log = new Logs(status, message,new Date(),user, type);
         logsRepository.save(log);
     }
-    public void addLogToUserWithSta(User user, String message, double sta, String status ){
-        Logs log = new Logs(status,sta, message,new Date(),user);
+    public void addLogToUserWithSta(User user, String message, double sta, String status, String type ){
+        Logs log = new Logs(status,sta, message,new Date(),user,type);
         logsRepository.save(log);
     }
 
-    public void addLog(User user, Logs logs ){
-        Logs log = new Logs(user,logs);
-        logsRepository.save(log);
+    public void addLog(Logs logs ){
+        logsRepository.save(logs);
     }
 
     public void addExchangeMoneyToStaLog(User user, String message, double sta, String status ){
@@ -59,13 +58,13 @@ public class LogsService {
 
 
 
-    public void StaSendingLog(User user,Integer receiverId, String message, double sta, String status ){
-        Logs log = new Logs(status, sta, message,new Date(),receiverId,user);
+    public void StaSendingLog(User user,Integer receiverId, String message, double sta, String status, String type ){
+        Logs log = new Logs(status, sta, message,new Date(),receiverId,user,type);
         logsRepository.save(log);
     }
 
-    public void addLogToUserWithMoney(User user, String message, double money, String status ){
-        Logs log = new Logs(money, message,new Date(),user,status);
+    public void addLogToUserWithMoney(User user, String message, double money, String status, String type ){
+        Logs log = new Logs(money, message,new Date(),user,status,type);
         logsRepository.save(log);
     }
 

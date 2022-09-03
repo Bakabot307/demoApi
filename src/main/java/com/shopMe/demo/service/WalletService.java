@@ -122,8 +122,8 @@ public class WalletService {
         walletRepository.save(OWallet2.get());
 
         String message = "send";
-        logsService.StaSendingLog(OWallet2.get().getUser(),user.getId(),"received",sta,"success");
-        logsService.StaSendingLog(user,OWallet2.get().getUser().getId(),message,sta,"success");
+        logsService.StaSendingLog(OWallet2.get().getUser(),user.getId(),"received",sta,"success",message);
+        logsService.StaSendingLog(user,OWallet2.get().getUser().getId(),message,sta,"success",message);
     }
 
     public void save(Wallet wallet) {

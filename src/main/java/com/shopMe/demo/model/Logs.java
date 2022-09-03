@@ -21,6 +21,8 @@ public class Logs {
     private Date createdDate;
 
     private Integer receiverId;
+
+    private String type;
     @ManyToOne
     @JoinColumn(name = "users_id", referencedColumnName = "id")
     private User user;
@@ -35,36 +37,40 @@ public class Logs {
         this.money = market.getSta();
         this.createdDate = market.getCreatedDate();
         this.user = market.getUser();
+        this.type= market.getType();
     }
 
 
-    public Logs( User user, Logs logs) {
+    public Logs( Logs logs) {
         this.id = logs.getId();
         this.status = logs.getStatus();
         this.sta = logs.getSta();
-        this.money = logs.getSta();
+        this.money = logs.getMoney();
         this.message = logs.getMessage();
         this.createdDate = logs.getCreatedDate();
         this.receiverId = logs.getReceiverId();
-        this.user = user;
+        this.user = logs.getUser();
+        this.type = logs.getType();
     }
 
-    public Logs(String status, String message, Date createdDate, User user) {
+    public Logs(String status, String message, Date createdDate, User user,String type) {
         this.status = status;
         this.message = message;
         this.createdDate = createdDate;
         this.user = user;
+        this.type = type;
     }
 
-    public Logs(String status, double sta, String message, Date createdDate, User user) {
+    public Logs(String status, double sta, String message, Date createdDate, User user,String type) {
         this.status = status;
         this.sta = sta;
         this.message = message;
         this.createdDate = createdDate;
         this.user = user;
+        this.type = type;
     }
 
-    public Logs(String status, double sta, String message, Date createdDate, Integer receiverId, User user) {
+    public Logs(String status, double sta, String message, Date createdDate, Integer receiverId, User user,String type) {
         this.status = status;
         this.sta = sta;
         this.money = money;
@@ -72,14 +78,16 @@ public class Logs {
         this.createdDate = createdDate;
         this.receiverId = receiverId;
         this.user = user;
+        this.type=type;
     }
 
-    public Logs(double money, String message, Date createdDate, User user, String status) {
+    public Logs(double money, String message, Date createdDate, User user, String status, String type) {
         this.status = status;
         this.money = money;
         this.message = message;
         this.createdDate = createdDate;
         this.user = user;
+        this.type = type;
     }
 
 
@@ -145,5 +153,13 @@ public class Logs {
 
     public void setReceiverId(Integer receiverId) {
         this.receiverId = receiverId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

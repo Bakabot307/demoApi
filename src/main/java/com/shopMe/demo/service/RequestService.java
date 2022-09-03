@@ -61,8 +61,8 @@ public class RequestService {
         log.setMessage(requestDto.getMessage());
         log.setUser(user);
         log.setStatus(requestDto.getStatus());
-
-        logsService.addLog(user,log);
+        log.setType(requestDto.getType());
+        logsService.addLog(log);
         requestRepository.save(request);
     }
 
@@ -76,6 +76,16 @@ public class RequestService {
                request.setStatus(requestDto.getStatus());
                request.setCheckedDate(new Date());
                 request.setStatus(requestDto.getStatus());
+
+                Logs log = new Logs();
+                log.setMoney(request.getMoney());
+                log.setCreatedDate(request.getCheckedDate());
+                log.setMessage(request.getMessage());
+                log.setUser(user);
+                log.setStatus(requestDto.getStatus());
+                log.setType(request.getType());
+
+                logsService.addLog(log);
                 requestRepository.save(request);
             } else if (request.getType().equalsIgnoreCase("withdraw")) {
 
@@ -92,12 +102,13 @@ public class RequestService {
                 requestRepository.save(request);
                 Logs log = new Logs();
                 log.setMoney(request.getMoney());
-                log.setCreatedDate(request.getCreatedDate());
+                log.setCreatedDate(request.getCheckedDate());
                 log.setMessage(request.getMessage());
                 log.setUser(user);
                 log.setStatus(requestDto.getStatus());
+                log.setType(request.getType());
 
-                logsService.addLog(user,log);
+                logsService.addLog(log);
             }
 
         } else if(requestDto.getStatus().equalsIgnoreCase("accepted")){
@@ -108,12 +119,13 @@ public class RequestService {
                 requestRepository.save(request);
                 Logs log = new Logs();
                 log.setMoney(request.getMoney());
-                log.setCreatedDate(request.getCreatedDate());
+                log.setCreatedDate(request.getCheckedDate());
                 log.setMessage(request.getMessage());
                 log.setUser(user);
                 log.setStatus(requestDto.getStatus());
+                log.setType(request.getType());
 
-                logsService.addLog(user,log);
+                logsService.addLog(log);
             } else if (request.getType().equalsIgnoreCase("withdraw")) {
                 wallet.get().setPendingMoney(wallet.get().getPendingMoney()-request.getMoney());
                 request.setCheckedDate(new Date());
@@ -121,12 +133,13 @@ public class RequestService {
                 requestRepository.save(request);
                 Logs log = new Logs();
                 log.setMoney(request.getMoney());
-                log.setCreatedDate(request.getCreatedDate());
+                log.setCreatedDate(request.getCheckedDate());
                 log.setMessage(request.getMessage());
                 log.setUser(user);
                 log.setStatus(requestDto.getStatus());
+                log.setType(request.getType());
 
-                logsService.addLog(user,log);
+                logsService.addLog(log);
             }
         }
 
