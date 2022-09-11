@@ -6,6 +6,7 @@ import com.shopMe.demo.dto.user.*;
 import com.shopMe.demo.exceptions.AuthenticationFailException;
 import com.shopMe.demo.exceptions.CustomException;
 import com.shopMe.demo.model.AuthenticationToken;
+import com.shopMe.demo.model.Role;
 import com.shopMe.demo.model.User;
 import com.shopMe.demo.repository.UserRepository;
 import org.slf4j.Logger;
@@ -48,7 +49,8 @@ public class UserService {
         String encryptedPassword;
         encryptedPassword = passwordEncoder.encode(signupDto.getPassword());
 
-        User user = new User(signupDto.getFirstName(), signupDto.getLastName(), signupDto.getEmail(), encryptedPassword,new com.shopMe.demo.model.Role());
+        User user = new User(signupDto.getFirstName(), signupDto.getLastName(), signupDto.getEmail(), encryptedPassword);
+        user.addRole(new Role(2L));
         try {
             // save the User
             userRepository.save(user);
