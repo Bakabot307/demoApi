@@ -6,6 +6,9 @@ public class SignupDto {
     private String email;
     private String password;
 
+    public SignupDto() {
+    }
+
     public String getFirstName() {
         return firstName;
     }
