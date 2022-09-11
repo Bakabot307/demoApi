@@ -2,20 +2,16 @@ package com.shopMe.demo.service;
 
 import com.shopMe.demo.dto.cart.CartDto;
 import com.shopMe.demo.dto.cart.CartItemDto;
-import com.shopMe.demo.dto.checkout.CheckoutItemDto;
 import com.shopMe.demo.exceptions.OrderNotFoundException;
 import com.shopMe.demo.model.Order;
 import com.shopMe.demo.model.OrderItem;
 import com.shopMe.demo.model.User;
 import com.shopMe.demo.repository.OrderItemsRepository;
 import com.shopMe.demo.repository.OrderRepository;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;

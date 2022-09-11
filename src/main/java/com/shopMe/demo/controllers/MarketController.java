@@ -5,9 +5,7 @@ import com.shopMe.demo.dto.market.AddToMarketDto;
 import com.shopMe.demo.dto.market.MarketDto;
 import com.shopMe.demo.dto.market.UpdateMarketDto;
 import com.shopMe.demo.exceptions.AuthenticationFailException;
-import com.shopMe.demo.model.Market;
 import com.shopMe.demo.model.User;
-import com.shopMe.demo.model.Wallet;
 import com.shopMe.demo.service.AuthenticationService;
 import com.shopMe.demo.service.MarketService;
 import com.shopMe.demo.service.UserService;
@@ -18,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/market")

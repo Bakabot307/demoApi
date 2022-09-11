@@ -1,25 +1,37 @@
 package com.shopMe.demo.service;
 
 
+import com.shopMe.demo.Settings.EmailSettingBag;
+import com.shopMe.demo.Utility;
 import com.shopMe.demo.config.MessageStrings;
 import com.shopMe.demo.dto.user.*;
 import com.shopMe.demo.exceptions.AuthenticationFailException;
 import com.shopMe.demo.exceptions.CustomException;
 import com.shopMe.demo.model.AuthenticationToken;
 import com.shopMe.demo.model.Role;
+import com.shopMe.demo.model.Settings.Setting;
 import com.shopMe.demo.model.User;
 import com.shopMe.demo.repository.UserRepository;
+import net.bytebuddy.utility.RandomString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class UserService {
 
     @Autowired
@@ -35,11 +47,14 @@ public class UserService {
     PasswordEncoder passwordEncoder;
 
 
+    @Autowired
+    SettingService settingService;
+
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
 
 
-    public SignUpResponseDto signUp(SignupDto signupDto)  throws CustomException {
+    public SignUpResponseDto signUp(SignupDto signupDto,HttpServletRequest request)  throws CustomException {
         // Check to see if the current email address has already been registered.
         if (Objects.nonNull(userRepository.findByEmail(signupDto.getEmail()))) {
             // If the email address has been registered then throw an exception.
@@ -50,10 +65,17 @@ public class UserService {
         encryptedPassword = passwordEncoder.encode(signupDto.getPassword());
 
         User user = new User(signupDto.getFirstName(), signupDto.getLastName(), signupDto.getEmail(), encryptedPassword);
+        user.setCreatedDate(new Date());
+        user.setEnabled(false);
         user.addRole(new Role(2L));
+
+        String randomCode = RandomString.make(64);
+        user.setEmailVerifyCode(randomCode);
+
         try {
             // save the User
             userRepository.save(user);
+            sendVerificationEmail(request, user);
             // generate token for user
             final AuthenticationToken authenticationToken = new AuthenticationToken(user);
             // save token in database
@@ -66,7 +88,35 @@ public class UserService {
             throw new CustomException(e.getMessage());
         }
     }
+    private void sendVerificationEmail(HttpServletRequest request, User user)
+            throws UnsupportedEncodingException, MessagingException {
+        EmailSettingBag emailSettings = settingService.getEmailSettings();
+        JavaMailSenderImpl mailSender = Utility.prepareMailSender(emailSettings);
 
+        String toAddress = user.getEmail();
+        String subject = emailSettings.getCustomerVerifySubject();
+        String content = emailSettings.getCustomerVerifyContent();
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+
+        helper.setFrom(emailSettings.getFromAddress(), emailSettings.getSenderName());
+        helper.setTo(toAddress);
+        helper.setSubject(subject);
+
+        content = content.replace("[[name]]", user.getFullName());
+
+        String verifyURL = Utility.getSiteURL(request) + "/verify?code=" + user.getEmailVerifyCode();
+
+        content = content.replace("[[URL]]", verifyURL);
+
+        helper.setText(content, true);
+
+        mailSender.send(message);
+
+        System.out.println("to Address: " + toAddress);
+        System.out.println("Verify URL: " + verifyURL);
+    }
 
 
 //   public User getOwner() {
@@ -99,6 +149,20 @@ public class UserService {
 
     public Optional<User> getById(Integer id) {
         return userRepository.findById(id);
+    }
+
+    public boolean Verify(String code) {
+
+            User customer = userRepository.findByEmailVerifyCode(code);
+        System.out.println(customer.getEmailVerifyCode());
+        System.out.println(customer.isEnabled());
+            if (!customer.isEnabled()) {
+                return false;
+            } else {
+                userRepository.enable(customer.getId());
+                return true;
+            }
+
     }
 
 

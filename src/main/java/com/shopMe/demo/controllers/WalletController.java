@@ -1,18 +1,11 @@
 package com.shopMe.demo.controllers;
 
 import com.shopMe.demo.common.ApiResponse;
-import com.shopMe.demo.dto.Request.RequestDto;
 import com.shopMe.demo.dto.Request.WithdrawDto;
-import com.shopMe.demo.dto.cart.AddToCartDto;
-import com.shopMe.demo.dto.cart.CartDto;
-import com.shopMe.demo.dto.product.ProductDto;
 import com.shopMe.demo.dto.wallet.WalletDto;
 import com.shopMe.demo.exceptions.AuthenticationFailException;
 import com.shopMe.demo.exceptions.ProductNotExistException;
-import com.shopMe.demo.model.Category;
-import com.shopMe.demo.model.Product;
 import com.shopMe.demo.model.User;
-import com.shopMe.demo.model.Wallet;
 import com.shopMe.demo.service.AuthenticationService;
 import com.shopMe.demo.service.LogsService;
 import com.shopMe.demo.service.RequestService;
@@ -20,11 +13,7 @@ import com.shopMe.demo.service.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/wallet")

@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.shopMe.demo.repository.*;
 
-import javax.validation.constraints.NotNull;
 import java.util.*;
 
 @Service

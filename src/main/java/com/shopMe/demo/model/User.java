@@ -25,8 +25,18 @@ public class User implements UserDetails {
     @Column(name = "email")
     private String email;
 
+    private String avatar;
+
     @Column(name = "password")
     private String password;
+
+    @Column(name = "created_date")
+    private Date CreatedDate;
+    @Column(name = "enabled")
+    private Boolean enabled;
+
+    @Column(name = "email_verify_code")
+    private String emailVerifyCode;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -172,4 +182,42 @@ public class User implements UserDetails {
     public void addRole(Role role) {
         this.roles.add(role);
     }
+
+    public Date getCreatedDate() {
+        return CreatedDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        CreatedDate = createdDate;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getEmailVerifyCode() {
+        return emailVerifyCode;
+    }
+
+    public void setEmailVerifyCode(String emailVerifyCode) {
+        this.emailVerifyCode = emailVerifyCode;
+    }
+
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
+
+
 }

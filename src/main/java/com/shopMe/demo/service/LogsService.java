@@ -1,7 +1,5 @@
 package com.shopMe.demo.service;
 
-import com.shopMe.demo.dto.Log.LogDto;
-import com.shopMe.demo.model.Cart;
 import com.shopMe.demo.model.Logs;
 import com.shopMe.demo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;

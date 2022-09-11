@@ -1,6 +1,5 @@
 package com.shopMe.demo.service;
 
-import com.shopMe.demo.dto.Request.RequestDataDto;
 import com.shopMe.demo.dto.Request.RequestDto;
 import com.shopMe.demo.dto.Request.RequestUpdateDto;
 import com.shopMe.demo.model.Logs;

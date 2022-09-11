@@ -1,9 +1,9 @@
 package com.shopMe.demo.controllers;
 
+import com.shopMe.demo.common.ApiResponse;
 import com.shopMe.demo.dto.user.SignInDto;
 import com.shopMe.demo.dto.user.SignInResponseDto;
 import com.shopMe.demo.dto.user.SignupDto;
-import com.shopMe.demo.exceptions.AuthenticationFailException;
 import com.shopMe.demo.exceptions.CustomException;
 import com.shopMe.demo.dto.user.SignUpResponseDto;
 import com.shopMe.demo.model.User;
@@ -19,10 +19,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import com.shopMe.demo.Security.jwt.JwtTokenUtil;
 
-import javax.annotation.security.RolesAllowed;
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
-@RequestMapping("user")
+
 @RestController
 public class UserController {
 
@@ -36,8 +35,8 @@ public class UserController {
     @Autowired JwtTokenUtil jwtUtil;
 
     @PostMapping("/signup")
-    public SignUpResponseDto Signup(@RequestBody SignupDto signupDto) throws CustomException {
-        return userService.signUp(signupDto);
+    public SignUpResponseDto Signup(@RequestBody SignupDto signupDto, HttpServletRequest request) throws CustomException {
+        return userService.signUp(signupDto,request);
     }
 
     @PostMapping("/login")
@@ -57,6 +56,16 @@ public class UserController {
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<ApiResponse> Verify(@RequestParam String code){
+        boolean verified = userService.Verify(code);
+        if(verified){
+            return new ResponseEntity<>(new ApiResponse(true, "Verified successfully!"), HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(new ApiResponse(false, "Failed to verify!"), HttpStatus.BAD_REQUEST);
     }
 
 }
