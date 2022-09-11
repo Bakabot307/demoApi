@@ -87,19 +87,19 @@ public class WalletController {
         return new ResponseEntity<>(new ApiResponse(true, message), HttpStatus.OK);
     }
 
-    @PutMapping("/exchange")
-    public ResponseEntity<ApiResponse> exchangeMoney(@RequestParam("token") String token,
-                                                     @RequestParam("sta") double sta
-                                                     ) throws AuthenticationFailException {
-        authenticationService.authenticate(token);
-        // get the user
-        User user = authenticationService.getUser(token);
-
-        // get items in the cart for the user.
-        walletService.exchangeMoney(sta,user);
-
-        return new ResponseEntity<>(new ApiResponse(true, "exchanged money successfully"), HttpStatus.OK);
-    }
+//    @PutMapping("/exchange")
+//    public ResponseEntity<ApiResponse> exchangeMoney(@RequestParam("token") String token,
+//                                                     @RequestParam("sta") double sta
+//                                                     ) throws AuthenticationFailException {
+//        authenticationService.authenticate(token);
+//        // get the user
+//        User user = authenticationService.getUser(token);
+//
+//        // get items in the cart for the user.
+//        walletService.exchangeMoney(sta,user);
+//
+//        return new ResponseEntity<>(new ApiResponse(true, "exchanged money successfully"), HttpStatus.OK);
+//    }
 
     @PutMapping("/send")
     public ResponseEntity<ApiResponse> sendSta(@RequestParam("token") String token,

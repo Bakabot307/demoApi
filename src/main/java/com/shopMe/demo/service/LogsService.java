@@ -49,7 +49,7 @@ public class LogsService {
         Logs log = new Logs();
         log.setSta(sta);
         log.setReceiverId(user.getId());
-        log.setUser(userService.getOwner());
+//        log.setUser(userService.getOwner());
         log.setMessage(message);
         log.setStatus(status);
         logsRepository.save(log);

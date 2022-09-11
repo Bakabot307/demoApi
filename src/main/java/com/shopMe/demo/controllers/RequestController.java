@@ -5,10 +5,7 @@ import com.shopMe.demo.common.ApiResponse;
 import com.shopMe.demo.dto.Request.RequestDataDto;
 import com.shopMe.demo.dto.Request.RequestDto;
 import com.shopMe.demo.dto.Request.RequestUpdateDto;
-import com.shopMe.demo.dto.cart.CartItemDto;
-import com.shopMe.demo.enums.Role;
 import com.shopMe.demo.exceptions.AuthenticationFailException;
-import com.shopMe.demo.model.Cart;
 import com.shopMe.demo.model.Request;
 import com.shopMe.demo.model.User;
 import com.shopMe.demo.service.*;
@@ -83,19 +80,19 @@ public class RequestController {
         return new ResponseEntity<>(new ApiResponse(true, "Added to request"), HttpStatus.CREATED);
     }
 
-    @PutMapping("/")
-    public ResponseEntity<ApiResponse> updateRequest(@RequestParam("token") String token, @RequestBody RequestUpdateDto requestDto) throws AuthenticationFailException {
-        authenticationService.authenticate(token);
-        User user = authenticationService.getUser(token);
-        Optional<User> user2 = userService.getById(requestDto.getUserId());
-
-        if(Role.admin!=user.getRole()){
-            return new ResponseEntity<>(new ApiResponse(true, "need to be admin"), HttpStatus.FORBIDDEN);
-        } else {
-            requestService.updateRequest(user2.get(),requestDto);
-            return new ResponseEntity<>(new ApiResponse(true, "updated"), HttpStatus.OK);
-        }
-    }
+//    @PutMapping("/")
+//    public ResponseEntity<ApiResponse> updateRequest(@RequestParam("token") String token, @RequestBody RequestUpdateDto requestDto) throws AuthenticationFailException {
+//        authenticationService.authenticate(token);
+//        User user = authenticationService.getUser(token);
+//        Optional<User> user2 = userService.getById(requestDto.getUserId());
+//
+//        if(Role.admin!=user.getRole()){
+//            return new ResponseEntity<>(new ApiResponse(true, "need to be admin"), HttpStatus.FORBIDDEN);
+//        } else {
+//            requestService.updateRequest(user2.get(),requestDto);
+//            return new ResponseEntity<>(new ApiResponse(true, "updated"), HttpStatus.OK);
+//        }
+//    }
 
     @PutMapping("/payout")
     public ResponseEntity<ApiResponse> payoutMoney(@RequestParam("token") String token, @RequestBody RequestUpdateDto requestDto) throws AuthenticationFailException {

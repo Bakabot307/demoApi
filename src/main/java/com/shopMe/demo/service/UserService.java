@@ -3,7 +3,6 @@ package com.shopMe.demo.service;
 
 import com.shopMe.demo.config.MessageStrings;
 import com.shopMe.demo.dto.user.*;
-import com.shopMe.demo.enums.Role;
 import com.shopMe.demo.exceptions.AuthenticationFailException;
 import com.shopMe.demo.exceptions.CustomException;
 import com.shopMe.demo.model.AuthenticationToken;
@@ -12,11 +11,10 @@ import com.shopMe.demo.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.xml.bind.DatatypeConverter;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -32,9 +30,14 @@ public class UserService {
     @Autowired
     WalletService walletService;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
 
     Logger logger = LoggerFactory.getLogger(UserService.class);
+
+
+
     public SignUpResponseDto signUp(SignupDto signupDto)  throws CustomException {
         // Check to see if the current email address has already been registered.
         if (Objects.nonNull(userRepository.findByEmail(signupDto.getEmail()))) {
@@ -42,17 +45,13 @@ public class UserService {
             throw new CustomException("User already exists");
         }
         // first encrypt the password
-        String encryptedPassword = signupDto.getPassword();
-        try {
-            encryptedPassword = hashPassword(signupDto.getPassword());
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+        String encryptedPassword;
+        encryptedPassword = passwordEncoder.encode(signupDto.getPassword());
 
-        User user = new User(signupDto.getFirstName(), signupDto.getLastName(), signupDto.getEmail(), Role.user, encryptedPassword );
+        User user = new User(signupDto.getFirstName(), signupDto.getLastName(), signupDto.getEmail(), encryptedPassword,new com.shopMe.demo.model.Role());
         try {
             // save the User
-             userRepository.save(user);
+            userRepository.save(user);
             // generate token for user
             final AuthenticationToken authenticationToken = new AuthenticationToken(user);
             // save token in database
@@ -66,20 +65,13 @@ public class UserService {
         }
     }
 
-    String hashPassword(String password) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        md.update(password.getBytes());
-        byte[] digest = md.digest();
-        String myHash = DatatypeConverter
-                .printHexBinary(digest).toUpperCase();
-        return myHash;
-    }
 
-   public User getOwner() {
 
-        User owner = userRepository.findByRole(Role.owner);
-       return owner;
-    }
+//   public User getOwner() {
+////fix this
+//        User owner = userRepository.findByRole(new Role());
+//       return owner;
+//    }
 
     public SignInResponseDto signIn(SignInDto signInDto) throws AuthenticationFailException, CustomException {
         // first find User by email
@@ -87,16 +79,10 @@ public class UserService {
         if(!Objects.nonNull(user)){
             throw new AuthenticationFailException("user not present");
         }
-        try {
-            // check if password is right
-            if (!user.getPassword().equals(hashPassword(signInDto.getPassword()))){
-                // passwords do not match
-                throw  new AuthenticationFailException(MessageStrings.WRONG_PASSWORD);
-            }
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            logger.error("hashing password failed {}", e.getMessage());
-            throw new CustomException(e.getMessage());
+        // check if password is right
+        if (!user.getPassword().equals(passwordEncoder.encode(signInDto.getPassword()))){
+            // passwords do not match
+            throw  new AuthenticationFailException(MessageStrings.WRONG_PASSWORD);
         }
 
         AuthenticationToken token = authenticationService.getToken(user);
@@ -105,8 +91,8 @@ public class UserService {
             // token not present
             throw new CustomException(MessageStrings.AUTH_TOEKN_NOT_PRESENT);
         }
-        UserDataDto userDataDto = new UserDataDto(user.getId(), user.getFirstName(), user.getLastName(), user.getRole().toString(), user.getEmail());
-        return new SignInResponseDto ("success", token.getToken(), userDataDto);
+        UserDataDto userDataDto = new UserDataDto(user.getId(), user.getFirstName(), user.getLastName(), user.getRoles().toString(), user.getEmail());
+        return new SignInResponseDto ("success", token.getToken());
     }
 
     public Optional<User> getById(Integer id) {

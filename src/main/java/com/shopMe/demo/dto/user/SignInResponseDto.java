@@ -8,13 +8,12 @@ public class SignInResponseDto {
     private String status;
     private String token;
 
-    private UserDataDto userDataDto;
 
 
-    public SignInResponseDto(String status, String token, UserDataDto userDataDto) {
+
+    public SignInResponseDto(String status, String token) {
         this.status = status;
         this.token = token;
-        this.userDataDto = userDataDto;
     }
 
     public String getStatus() {
@@ -33,11 +32,4 @@ public class SignInResponseDto {
         this.token = token;
     }
 
-    public UserDataDto getUserDataDto() {
-        return userDataDto;
-    }
-
-    public void setUserDataDto(UserDataDto userDataDto) {
-        this.userDataDto = userDataDto;
-    }
 }

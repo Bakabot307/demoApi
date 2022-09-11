@@ -1,7 +1,5 @@
 package com.shopMe.demo.dto.user;
 
-import com.shopMe.demo.enums.Role;
-
 public class SignInDto {
     private String email;
     private String password;

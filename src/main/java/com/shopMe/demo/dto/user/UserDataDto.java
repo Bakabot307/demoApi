@@ -1,7 +1,5 @@
 package com.shopMe.demo.dto.user;
 
-import com.shopMe.demo.enums.Role;
-
 public class UserDataDto {
     private Integer id;
     private String firstName;

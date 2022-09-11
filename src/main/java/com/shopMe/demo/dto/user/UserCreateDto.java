@@ -1,6 +1,6 @@
 package com.shopMe.demo.dto.user;
 
-import com.shopMe.demo.enums.Role;
+import com.shopMe.demo.model.Role;
 
 public class UserCreateDto {
 
