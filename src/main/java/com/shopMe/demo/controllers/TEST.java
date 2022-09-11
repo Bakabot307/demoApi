@@ -25,7 +25,7 @@ public class TEST {
     @Autowired
     private MarketRepository marketRepository;
     @GetMapping("/")
-    @RolesAllowed("ROLE_USER")
+    @RolesAllowed("user")
     public ResponseEntity<ApiResponse> TEST(){
 
         return new ResponseEntity<>(new ApiResponse(true, "failed"), HttpStatus.OK);
