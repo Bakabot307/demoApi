@@ -136,6 +136,7 @@ public class UserController {
                             @RequestBody UpdateUserDto updateUserDto
                            ) throws  UserNotFoundException {
 
+
             User updatingUser = userService.getById(id);
             updatingUser.Update(updateUserDto);
 
