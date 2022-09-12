@@ -108,7 +108,7 @@ public class WalletService {
     public void sendSta(double sta, User user, String receiver) {
         double senderSta,receiverSta;
         Optional<Wallet> OWallet = walletRepository.findByUser(user);
-        User receiverAccount = userRepository.findByEmail(receiver);
+        User receiverAccount = userRepository.findByEmail(receiver).get();
         Optional<Wallet> OWallet2 = walletRepository.findByUser(receiverAccount);
 
 

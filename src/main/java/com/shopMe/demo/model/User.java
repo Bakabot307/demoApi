@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-
 import javax.persistence.*;
 import java.util.*;
 
@@ -42,11 +41,7 @@ public class User implements UserDetails {
     private String emailVerifyCode;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_role",
-            joinColumns = @JoinColumn(name = "users_id"),
-            inverseJoinColumns = @JoinColumn(name = "roles_id")
-    )
+    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "users_id"), inverseJoinColumns = @JoinColumn(name = "roles_id"))
     private Set<Role> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
@@ -59,7 +54,6 @@ public class User implements UserDetails {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Logs> logs;
 
-
     public User() {
     }
 
@@ -69,7 +63,8 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
     }
-    public void  Update(UpdateUserDto dto){
+
+    public void Update(UpdateUserDto dto) {
         this.firstName = dto.getFirstName();
         this.lastName = dto.getLastName();
         this.password = dto.getPassword();
@@ -107,7 +102,6 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -119,7 +113,7 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return  this.password;
+        return this.password;
     }
 
     @Override
@@ -150,9 +144,6 @@ public class User implements UserDetails {
     public void setPassword(String password) {
         this.password = password;
     }
-
-
-
 
     public List<Logs> getLogs() {
         return logs;
@@ -228,10 +219,10 @@ public class User implements UserDetails {
 
     @Transient
     public String getPhotosImagePath() {
-        if (id == null || avatar == null) return "/user-photos/default-user.png";
+        if (id == null || avatar == null)
+            return "/user-photos/default-user.png";
 
         return "/user-photos/" + this.id + "/" + this.avatar;
     }
-
 
 }

@@ -38,8 +38,8 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(email -> userRepo.findByEmail(email));
-
+        auth.userDetailsService(email -> userRepo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User " + email + " not found.")));
     }
 
     @Override

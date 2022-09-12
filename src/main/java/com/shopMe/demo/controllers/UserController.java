@@ -21,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -96,9 +97,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> Login(@RequestBody SignInDto signInDto) {
-        System.out.println(signInDto.getPassword());
-        System.out.println(signInDto.getEmail());
+    public ResponseEntity<ApiResponse> Login(@RequestBody SignInDto signInDto) {
         try {
             Authentication authentication = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -110,11 +109,10 @@ public class UserController {
             String accessToken = jwtUtil.generateAccessToken(user);
             SignInResponseDto response = new SignInResponseDto(user.getEmail(), accessToken);
 
-            return ResponseEntity.ok().body(response);
+            return new ResponseEntity<>(new ApiResponse(true,"login successfully!"),HttpStatus.OK);
 
         } catch (BadCredentialsException ex) {
-            System.out.println("bad");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return new ResponseEntity<>(new ApiResponse(false,"Email or password is not correct!"),HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -129,15 +127,15 @@ public class UserController {
         return new ResponseEntity<>(new ApiResponse(false, "Failed to verify!"), HttpStatus.BAD_REQUEST);
     }
 
-    @PutMapping("/user/edit/{id}")
+    @PutMapping("/user/edit")
     @RolesAllowed("ROLE_USER")
+
     public ResponseEntity<ApiResponse> editUser(
-            @PathVariable(name = "id") Integer id,
                             @RequestBody UpdateUserDto updateUserDto
                            ) throws  UserNotFoundException {
 
-
-            User updatingUser = userService.getById(id);
+        User user1 = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            User updatingUser = userService.getById(user1.getId());
             updatingUser.Update(updateUserDto);
 
         userService.save(updatingUser);
@@ -145,13 +143,15 @@ public class UserController {
     }
 
 
-    @PutMapping("/user/avatar/{id}")
+    @PutMapping("/user/avatar")
     @RolesAllowed("ROLE_USER")
     public ResponseEntity<ApiResponse> editAvatar(
-            @PathVariable(name = "id") Integer id,
             @RequestParam("image") MultipartFile multipartFile) throws IOException, UserNotFoundException {
 
-        User updatingUser = userService.getById(id);
+        User user1 = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println("user jwt email: "+user1.getEmail());
+        System.out.println("user jwt id" + user1.getId());
+        User updatingUser = userService.getById(user1.getId());
         if (!multipartFile.isEmpty()) {
             String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
             updatingUser.setAvatar(fileName);

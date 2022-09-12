@@ -133,7 +133,7 @@ public class UserService {
 
     public SignInResponseDto signIn(SignInDto signInDto) throws AuthenticationFailException, CustomException {
         // first find User by email
-        User user = userRepository.findByEmail(signInDto.getEmail());
+        User user = userRepository.findByEmail(signInDto.getEmail()).get();
         if(!Objects.nonNull(user)){
             throw new AuthenticationFailException("user not present");
         }
@@ -176,7 +176,7 @@ public class UserService {
 
     public User findByEmail(String email) throws UserNotFoundException {
         try {
-            return userRepository.findByEmail(email);
+            return userRepository.findByEmail(email).get();
         } catch (NoSuchElementException ex) {
             throw new UsernameNotFoundException("Could not find any user with ID " + email);
         }
