@@ -110,7 +110,7 @@ public class UserController {
             return ResponseEntity.ok().body(response);
 
         } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return new ResponseEntity<>(new ApiResponse(false, "Email or password is wrong!"), HttpStatus.BAD_REQUEST);
         }
     }
 
