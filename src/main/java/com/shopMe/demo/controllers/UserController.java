@@ -97,22 +97,20 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> Login(@RequestBody @Valid SignInDto signInDto) {
+    public ResponseEntity<?> Login(@RequestBody @Valid SignInDto request) {
         try {
             Authentication authentication = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            signInDto.getEmail(), signInDto.getPassword())
-
-            );
+                            request.getEmail(), request.getPassword()));
 
             User user = (User) authentication.getPrincipal();
             String accessToken = jwtUtil.generateAccessToken(user);
             SignInResponseDto response = new SignInResponseDto(user.getEmail(), accessToken);
 
-            return new ResponseEntity<>(new ApiResponse(true,"login successfully!"),HttpStatus.OK);
+            return ResponseEntity.ok().body(response);
 
         } catch (BadCredentialsException ex) {
-            return new ResponseEntity<>(new ApiResponse(false,"Email or password is not correct!"),HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
