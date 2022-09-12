@@ -56,7 +56,7 @@ public class UserController {
 
     @PostMapping(value={"/signup"})
     public ResponseEntity<ApiResponse> Signup(
-            @RequestBody SignupDto signupDto,
+            @RequestBody @Valid SignupDto signupDto,
                                  HttpServletRequest request
     ) throws CustomException, UserNotFoundException, MessagingException, UnsupportedEncodingException {
 
@@ -97,7 +97,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> Login(@RequestBody SignInDto signInDto) {
+    public ResponseEntity<ApiResponse> Login(@RequestBody @Valid SignInDto signInDto) {
         try {
             Authentication authentication = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -118,7 +118,7 @@ public class UserController {
 
 
     @PostMapping("/verify")
-    public ResponseEntity<ApiResponse> Verify(@RequestParam String code){
+    public ResponseEntity<ApiResponse> Verify(@RequestParam @Valid String code){
         boolean verified = userService.Verify(code);
         if(verified){
             return new ResponseEntity<>(new ApiResponse(true, "Verified successfully!"), HttpStatus.OK);
@@ -131,7 +131,7 @@ public class UserController {
     @RolesAllowed("ROLE_USER")
 
     public ResponseEntity<ApiResponse> editUser(
-                            @RequestBody UpdateUserDto updateUserDto
+                            @RequestBody @Valid UpdateUserDto updateUserDto
                            ) throws  UserNotFoundException {
 
         User user1 = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
