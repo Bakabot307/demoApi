@@ -58,7 +58,7 @@ public class UserController {
     public ResponseEntity<ApiResponse> Signup(
             @RequestBody @Valid SignupDto signupDto,
                                  HttpServletRequest request
-    ) throws CustomException, UserNotFoundException, MessagingException, UnsupportedEncodingException {
+    ) throws CustomException, MessagingException, UnsupportedEncodingException, UserNotFoundException {
 
         if (Objects.nonNull(userService.findByEmail(signupDto.getEmail()))) {
             throw new CustomException("User already exists");

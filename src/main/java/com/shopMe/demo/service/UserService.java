@@ -9,19 +9,13 @@ import com.shopMe.demo.exceptions.AuthenticationFailException;
 import com.shopMe.demo.exceptions.CustomException;
 import com.shopMe.demo.exceptions.UserNotFoundException;
 import com.shopMe.demo.model.AuthenticationToken;
-import com.shopMe.demo.model.Role;
-import com.shopMe.demo.model.Settings.Setting;
 import com.shopMe.demo.model.User;
 import com.shopMe.demo.repository.UserRepository;
-import net.bytebuddy.utility.RandomString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +24,6 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.io.UnsupportedEncodingException;
-import java.util.Date;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -174,12 +167,9 @@ public class UserService {
 
     }
 
-    public User findByEmail(String email) throws UserNotFoundException {
-        try {
-            return userRepository.findByEmail(email).get();
-        } catch (NoSuchElementException ex) {
-            throw new UsernameNotFoundException("Could not find any user with ID " + email);
-        }
+    public User findByEmail(String email) {Optional<User> user = userRepository.findByEmail(email);
+        return user.orElse(null);
+
     }
 
 
