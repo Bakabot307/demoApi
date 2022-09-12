@@ -11,6 +11,8 @@ import com.shopMe.demo.service.AuthenticationService;
 import com.shopMe.demo.service.UserService;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.utility.RandomString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,13 +35,14 @@ import javax.swing.text.html.parser.Entity;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.util.Date;
 import java.util.Objects;
 
 
 @RestController
 public class UserController {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenUtil.class);
     @Autowired
     UserService userService;
 
@@ -62,9 +65,10 @@ public class UserController {
         // first encrypt the password
         String encryptedPassword;
         System.out.println(signupDto.getPassword());
-        System.out.println(signupDto.getFirstName());
-        encryptedPassword = passwordEncoder.encode(signupDto.getPassword());
+        System.out.println(signupDto.getEmail());
 
+        encryptedPassword = passwordEncoder.encode(signupDto.getPassword());
+        System.out.println(encryptedPassword);
         User user = new User(signupDto.getFirstName(), signupDto.getLastName(), signupDto.getEmail(), encryptedPassword);
         user.setCreatedDate(new Date());
         user.setEnabled(false);
@@ -76,6 +80,7 @@ public class UserController {
 
 
         User savedUser = userService.save(user);
+
 
         if(Objects.nonNull(savedUser)){
             userService.sendEmail(user,request);
@@ -91,16 +96,113 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid SignInDto request) {
+    public ResponseEntity<?> Login(@RequestBody SignInDto signInDto) {
+        System.out.println(signInDto.getPassword());
+        System.out.println(signInDto.getEmail());
         try {
             Authentication authentication = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            request.getEmail(), request.getPassword()));
+                            signInDto.getEmail(), signInDto.getPassword())
+
+            );
 
             User user = (User) authentication.getPrincipal();
             String accessToken = jwtUtil.generateAccessToken(user);
             SignInResponseDto response = new SignInResponseDto(user.getEmail(), accessToken);
-            System.out.println("ád");
+
+            return ResponseEntity.ok().body(response);
+
+        } catch (BadCredentialsException ex) {
+            System.out.println("bad");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+
+    @PostMapping("/verify")
+    public ResponseEntity<ApiResponse> Verify(@RequestParam String code){
+        boolean verified = userService.Verify(code);
+        if(verified){
+            return new ResponseEntity<>(new ApiResponse(true, "Verified successfully!"), HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(new ApiResponse(false, "Failed to verify!"), HttpStatus.BAD_REQUEST);
+    }
+
+    @PutMapping("/user/edit/{id}")
+    @RolesAllowed("ROLE_USER")
+    public ResponseEntity<ApiResponse> editUser(
+            @PathVariable(name = "id") Integer id,
+                            @RequestBody UpdateUserDto updateUserDto
+                           ) throws  UserNotFoundException {
+
+            User updatingUser = userService.getById(id);
+            updatingUser.Update(updateUserDto);
+
+        userService.save(updatingUser);
+        return new ResponseEntity<>(new ApiResponse(true, "Updated user successfully!"), HttpStatus.OK);
+    }
+
+
+    @PutMapping("/user/avatar/{id}")
+    @RolesAllowed("ROLE_USER")
+    public ResponseEntity<ApiResponse> editAvatar(
+            @PathVariable(name = "id") Integer id,
+            @RequestParam("image") MultipartFile multipartFile) throws IOException, UserNotFoundException {
+
+        User updatingUser = userService.getById(id);
+        if (!multipartFile.isEmpty()) {
+            String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+            updatingUser.setAvatar(fileName);
+            String uploadDir = "user-photos/" + updatingUser.getId();
+            FileUploadUtil.cleanDir(uploadDir);
+            FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+        } else {
+            if (updatingUser.getAvatar().isEmpty()) updatingUser.setAvatar(null);
+        }
+        userService.updateAvatar(updatingUser);
+        return new ResponseEntity<>(new ApiResponse(true, "Updated avatar successfully!"), HttpStatus.OK);
+    }
+    @PostMapping(value={"/upload"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public String upload(SignupDto  signupDto,
+                             @RequestPart(value = "image",required = false) MultipartFile multipartFile,
+                                    HttpServletRequest request
+    ) throws CustomException, IOException, UserNotFoundException {
+
+//        if (!multipartFile.isEmpty()) {
+//            String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+//            user.setAvatar(fileName);
+//            String uploadDir = "user-photos/" + user.getId();
+//            FileUploadUtil.cleanDir(uploadDir);
+//            FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+//        } else {
+//            if (user.getAvatar().isEmpty()) user.setAvatar(null);
+//        }
+        return "test";
+    }
+
+//@GetMapping("/profile")
+//    public ResponseEntity<Profile> Profile(@PathVariable(name = "id") Integer id) throws UserNotFoundException {
+//
+//        User user = userService.getById(id);
+//
+//        Profile profile = new Profile();
+//
+//    return new ResponseEntity<>(profile,HttpStatus.OK);
+//}
+
+    @PostMapping("/login2")
+    public ResponseEntity<?> Login2(@RequestBody SignInDto signInDto) {
+        try {
+            Authentication authentication = authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            signInDto.getEmail(), signInDto.getPassword())
+            );
+
+            User user = (User) authentication.getPrincipal();
+            String accessToken = jwtUtil.generateAccessToken(user);
+            SignInResponseDto response = new SignInResponseDto(user.getEmail(), accessToken);
+
             return ResponseEntity.ok().body(response);
 
         } catch (BadCredentialsException ex) {
@@ -108,92 +210,13 @@ public class UserController {
         }
     }
 
-//    @PostMapping("/verify")
-//    public ResponseEntity<ApiResponse> Verify(@RequestParam String code){
-//        boolean verified = userService.Verify(code);
-//        if(verified){
-//            return new ResponseEntity<>(new ApiResponse(true, "Verified successfully!"), HttpStatus.OK);
-//        }
-//
-//        return new ResponseEntity<>(new ApiResponse(false, "Failed to verify!"), HttpStatus.BAD_REQUEST);
-//    }
-//    @RolesAllowed("user")
-//    @PutMapping("/user/edit/{id}")
-//    public ResponseEntity<ApiResponse> editUser(
-//            @PathVariable(name = "id") Integer id,
-//                            @RequestBody UpdateUserDto updateUserDto
-//                           ) throws  UserNotFoundException {
-//
-//            User updatingUser = userService.getById(id);
-//            updatingUser.Update(updateUserDto);
-//
-//        userService.save(updatingUser);
-//        return new ResponseEntity<>(new ApiResponse(true, "Updated user successfully!"), HttpStatus.OK);
-//    }
-//
-//    @RolesAllowed("user")
-//    @PutMapping("/user/avatar/{id}")
-//    public ResponseEntity<ApiResponse> editAvatar(
-//            @PathVariable(name = "id") Integer id,
-//            @RequestParam("image") MultipartFile multipartFile) throws IOException, UserNotFoundException {
-//
-//        User updatingUser = userService.getById(id);
-//        if (!multipartFile.isEmpty()) {
-//            String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
-//            updatingUser.setAvatar(fileName);
-//            String uploadDir = "user-photos/" + updatingUser.getId();
-//            FileUploadUtil.cleanDir(uploadDir);
-//            FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
-//        } else {
-//            if (updatingUser.getAvatar().isEmpty()) updatingUser.setAvatar(null);
-//        }
-//        userService.save(updatingUser);
-//        return new ResponseEntity<>(new ApiResponse(true, "Updated avatar successfully!"), HttpStatus.OK);
-//    }
-//    @PostMapping(value={"/upload"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-//    public String upload(SignupDto  signupDto,
-//                             @RequestPart(value = "image",required = false) MultipartFile multipartFile,
-//                                    HttpServletRequest request
-//    ) throws CustomException, IOException, UserNotFoundException {
-//
-////        if (!multipartFile.isEmpty()) {
-////            String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-////            user.setAvatar(fileName);
-////            String uploadDir = "user-photos/" + user.getId();
-////            FileUploadUtil.cleanDir(uploadDir);
-////            FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
-////        } else {
-////            if (user.getAvatar().isEmpty()) user.setAvatar(null);
-////        }
-//        return "test";
-//    }
-//
-////@GetMapping("/profile")
-////    public ResponseEntity<Profile> Profile(@PathVariable(name = "id") Integer id) throws UserNotFoundException {
-////
-////        User user = userService.getById(id);
-////
-////        Profile profile = new Profile();
-////
-////    return new ResponseEntity<>(profile,HttpStatus.OK);
-////}
-//
-//    @PostMapping("/login2")
-//    public ResponseEntity<?> Login2(@RequestBody SignInDto signInDto) {
-//        try {
-//            Authentication authentication = authManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(
-//                            signInDto.getEmail(), signInDto.getPassword())
-//            );
-//
-//            User user = (User) authentication.getPrincipal();
-//            String accessToken = jwtUtil.generateAccessToken(user);
-//            SignInResponseDto response = new SignInResponseDto(user.getEmail(), accessToken);
-//
-//            return ResponseEntity.ok().body(response);
-//
-//        } catch (BadCredentialsException ex) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        }
-//    }
+    @PutMapping("/users")
+    public ResponseEntity<?> createUser(@RequestBody @Valid User user) {
+        User createdUser = userService.save2(user);
+        URI uri = URI.create("/users/" + createdUser.getId());
+
+
+
+        return ResponseEntity.created(uri).body(createdUser);
+    }
 }

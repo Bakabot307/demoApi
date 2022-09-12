@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.shopMe.demo.repository.*;
 
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
@@ -41,8 +41,6 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(email -> userRepo.findByEmail(email));
 
     }
-
-
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

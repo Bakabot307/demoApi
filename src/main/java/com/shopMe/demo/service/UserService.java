@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -56,10 +58,18 @@ public class UserService {
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
 
+    public User save2(User user) {
+        String rawPassword = user.getPassword();
+        String encodedPassword = passwordEncoder.encode(rawPassword);
+        user.setPassword(encodedPassword);
 
+        return userRepository.save(user);
+    }
 
     public User save(User user)  {
         boolean isUpdatingUser = (user.getId() != null);
+        System.out.println(isUpdatingUser+" is updating");
+        System.out.println("password1"+ user.getPassword());
         if (isUpdatingUser) {
             User existingUser = userRepository.findById(user.getId()).get();
 
@@ -68,10 +78,13 @@ public class UserService {
             } else {
                 encodePassword(user);
             }
-        } else {
-            encodePassword(user);
         }
+        System.out.println("password"+ user.getPassword());
         return userRepository.save(user);
+    }
+
+    public void updateAvatar(User user){
+        userRepository.save(user);
     }
 
     private void encodePassword(User user) {
@@ -168,6 +181,8 @@ public class UserService {
             throw new UsernameNotFoundException("Could not find any user with ID " + email);
         }
     }
+
+
 
 
 //    public ResponseDto createUser(String token, UserCreateDto userCreateDto) throws CustomException, AuthenticationFailException {

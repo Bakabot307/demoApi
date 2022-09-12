@@ -31,8 +31,11 @@ public class JwtTokenUtil {
 
         return Jwts.builder()
                 .setSubject(String.format("%s,%s", user.getId(), user.getEmail()))
-                .setIssuer("CodeJava")
+                .setIssuer("STA")
                 .claim("roles", user.getRoles().toString())
+                .claim("firstName", user.getFirstName())
+                .claim("lastName",user.getLastName())
+                .claim("avatar",user.getPhotosImagePath())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION))
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)

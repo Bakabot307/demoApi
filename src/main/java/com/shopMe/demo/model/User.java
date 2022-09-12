@@ -5,6 +5,8 @@ import com.shopMe.demo.dto.user.UpdateUserDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 
 import javax.persistence.*;
@@ -230,5 +232,6 @@ public class User implements UserDetails {
 
         return "/user-photos/" + this.id + "/" + this.avatar;
     }
+
 
 }
