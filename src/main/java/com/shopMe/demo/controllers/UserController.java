@@ -2,11 +2,8 @@ package com.shopMe.demo.controllers;
 
 import com.shopMe.demo.common.ApiResponse;
 import com.shopMe.demo.config.FileUploadUtil;
-import com.shopMe.demo.dto.user.SignInDto;
-import com.shopMe.demo.dto.user.SignInResponseDto;
-import com.shopMe.demo.dto.user.SignupDto;
+import com.shopMe.demo.dto.user.*;
 import com.shopMe.demo.exceptions.CustomException;
-import com.shopMe.demo.dto.user.SignUpResponseDto;
 import com.shopMe.demo.exceptions.UserNotFoundException;
 import com.shopMe.demo.model.Role;
 import com.shopMe.demo.model.User;
@@ -27,9 +24,15 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import com.shopMe.demo.Security.jwt.JwtTokenUtil;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.function.EntityResponse;
 
+import javax.annotation.security.RolesAllowed;
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import javax.swing.text.html.parser.Entity;
+import javax.validation.Valid;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Objects;
 
@@ -47,11 +50,11 @@ public class UserController {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    @PostMapping(value={"/signup"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public SignUpResponseDto Signup(SignupDto signupDto,
-                                    @RequestPart(value = "image",required = false) MultipartFile multipartFile,
-                                    HttpServletRequest request
-    ) throws CustomException, IOException, UserNotFoundException {
+    @PostMapping(value={"/signup"})
+    public ResponseEntity<ApiResponse> Signup(
+            @RequestBody SignupDto signupDto,
+                                 HttpServletRequest request
+    ) throws CustomException, UserNotFoundException, MessagingException, UnsupportedEncodingException {
 
         if (Objects.nonNull(userService.findByEmail(signupDto.getEmail()))) {
             throw new CustomException("User already exists");
@@ -69,31 +72,35 @@ public class UserController {
 
         String randomCode = RandomString.make(64);
         user.setEmailVerifyCode(randomCode);
+        user.setAvatar(null);
 
-        if (!multipartFile.isEmpty()) {
-            String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-            user.setAvatar(fileName);
-            String uploadDir = "user-photos/" + user.getId();
-            FileUploadUtil.cleanDir(uploadDir);
-            FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+
+        User savedUser = userService.save(user);
+
+        if(Objects.nonNull(savedUser)){
+            userService.sendEmail(user,request);
+            return new ResponseEntity<>(new ApiResponse(true, "created user successfully!"), HttpStatus.CREATED);
         } else {
-            if (user.getAvatar().isEmpty()) user.setAvatar(null);
+            return new ResponseEntity<>(new ApiResponse(false, "Failed to create new user"), HttpStatus.BAD_REQUEST);
+
         }
-        return userService.signUp(user,request);
+
+
+
+
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> Login(@RequestBody SignInDto signInDto) {
+    public ResponseEntity<?> login(@RequestBody @Valid SignInDto request) {
         try {
             Authentication authentication = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            signInDto.getEmail(), signInDto.getPassword())
-            );
+                            request.getEmail(), request.getPassword()));
 
             User user = (User) authentication.getPrincipal();
             String accessToken = jwtUtil.generateAccessToken(user);
             SignInResponseDto response = new SignInResponseDto(user.getEmail(), accessToken);
-
+            System.out.println("ád");
             return ResponseEntity.ok().body(response);
 
         } catch (BadCredentialsException ex) {
@@ -101,46 +108,92 @@ public class UserController {
         }
     }
 
-    @PostMapping("/verify")
-    public ResponseEntity<ApiResponse> Verify(@RequestParam String code){
-        boolean verified = userService.Verify(code);
-        if(verified){
-            return new ResponseEntity<>(new ApiResponse(true, "Verified successfully!"), HttpStatus.OK);
-        }
-
-        return new ResponseEntity<>(new ApiResponse(false, "Failed to verify!"), HttpStatus.BAD_REQUEST);
-    }
-
-//    @GetMapping("/user/edit/{id}")
-//    public ResponseEntity<ApiResponse> editUser(@PathVariable(name = "id") Integer id,
-//                           @RequestBody UpdateUserDto updateUserDto,
-//                           @RequestParam("image") MultipartFile multipartFile) throws IOException {
+//    @PostMapping("/verify")
+//    public ResponseEntity<ApiResponse> Verify(@RequestParam String code){
+//        boolean verified = userService.Verify(code);
+//        if(verified){
+//            return new ResponseEntity<>(new ApiResponse(true, "Verified successfully!"), HttpStatus.OK);
+//        }
 //
-//            String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-//            user.setPhotos(fileName);
-//            User savedUser = service.save(user);
+//        return new ResponseEntity<>(new ApiResponse(false, "Failed to verify!"), HttpStatus.BAD_REQUEST);
+//    }
+//    @RolesAllowed("user")
+//    @PutMapping("/user/edit/{id}")
+//    public ResponseEntity<ApiResponse> editUser(
+//            @PathVariable(name = "id") Integer id,
+//                            @RequestBody UpdateUserDto updateUserDto
+//                           ) throws  UserNotFoundException {
 //
-//            String uploadDir = "user-photos/" + savedUser.getId();
+//            User updatingUser = userService.getById(id);
+//            updatingUser.Update(updateUserDto);
 //
+//        userService.save(updatingUser);
+//        return new ResponseEntity<>(new ApiResponse(true, "Updated user successfully!"), HttpStatus.OK);
+//    }
+//
+//    @RolesAllowed("user")
+//    @PutMapping("/user/avatar/{id}")
+//    public ResponseEntity<ApiResponse> editAvatar(
+//            @PathVariable(name = "id") Integer id,
+//            @RequestParam("image") MultipartFile multipartFile) throws IOException, UserNotFoundException {
+//
+//        User updatingUser = userService.getById(id);
+//        if (!multipartFile.isEmpty()) {
+//            String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+//            updatingUser.setAvatar(fileName);
+//            String uploadDir = "user-photos/" + updatingUser.getId();
 //            FileUploadUtil.cleanDir(uploadDir);
 //            FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
-//        return new ResponseEntity<>(new ApiResponse(true, "Updated successfully!"), HttpStatus.OK);
+//        } else {
+//            if (updatingUser.getAvatar().isEmpty()) updatingUser.setAvatar(null);
+//        }
+//        userService.save(updatingUser);
+//        return new ResponseEntity<>(new ApiResponse(true, "Updated avatar successfully!"), HttpStatus.OK);
 //    }
-
-    @PostMapping(value={"/upload"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public String upload(SignupDto  signupDto,
-                             @RequestPart(value = "image",required = false) MultipartFile multipartFile,
-                                    HttpServletRequest request
-    ) throws CustomException, IOException, UserNotFoundException {
-
-        System.out.println(signupDto.getFirstName());
-        System.out.println(signupDto.getEmail());
-        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-
-        String uploadDir = "test/" + fileName;
-        FileUploadUtil.cleanDir(uploadDir);
-        FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
-        return "test";
-    }
-
+//    @PostMapping(value={"/upload"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+//    public String upload(SignupDto  signupDto,
+//                             @RequestPart(value = "image",required = false) MultipartFile multipartFile,
+//                                    HttpServletRequest request
+//    ) throws CustomException, IOException, UserNotFoundException {
+//
+////        if (!multipartFile.isEmpty()) {
+////            String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+////            user.setAvatar(fileName);
+////            String uploadDir = "user-photos/" + user.getId();
+////            FileUploadUtil.cleanDir(uploadDir);
+////            FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+////        } else {
+////            if (user.getAvatar().isEmpty()) user.setAvatar(null);
+////        }
+//        return "test";
+//    }
+//
+////@GetMapping("/profile")
+////    public ResponseEntity<Profile> Profile(@PathVariable(name = "id") Integer id) throws UserNotFoundException {
+////
+////        User user = userService.getById(id);
+////
+////        Profile profile = new Profile();
+////
+////    return new ResponseEntity<>(profile,HttpStatus.OK);
+////}
+//
+//    @PostMapping("/login2")
+//    public ResponseEntity<?> Login2(@RequestBody SignInDto signInDto) {
+//        try {
+//            Authentication authentication = authManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(
+//                            signInDto.getEmail(), signInDto.getPassword())
+//            );
+//
+//            User user = (User) authentication.getPrincipal();
+//            String accessToken = jwtUtil.generateAccessToken(user);
+//            SignInResponseDto response = new SignInResponseDto(user.getEmail(), accessToken);
+//
+//            return ResponseEntity.ok().body(response);
+//
+//        } catch (BadCredentialsException ex) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//        }
+//    }
 }

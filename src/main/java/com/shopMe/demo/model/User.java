@@ -1,6 +1,7 @@
 package com.shopMe.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.shopMe.demo.dto.user.UpdateUserDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -65,7 +66,11 @@ public class User implements UserDetails {
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-
+    }
+    public void  Update(UpdateUserDto dto){
+        this.firstName = dto.getFirstName();
+        this.lastName = dto.getLastName();
+        this.password = dto.getPassword();
     }
 
     public Integer getId() {
@@ -219,5 +224,11 @@ public class User implements UserDetails {
         return firstName + " " + lastName;
     }
 
+    @Transient
+    public String getPhotosImagePath() {
+        if (id == null || avatar == null) return "/user-photos/default-user.png";
+
+        return "/user-photos/" + this.id + "/" + this.avatar;
+    }
 
 }

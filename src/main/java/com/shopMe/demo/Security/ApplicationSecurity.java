@@ -38,7 +38,7 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(username -> userRepo.findByEmail(username));
+        auth.userDetailsService(email -> userRepo.findByEmail(email));
 
     }
 
@@ -50,7 +50,7 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authorizeRequests()
-                .antMatchers( "/**").permitAll()
+                .antMatchers( "/**","/login").permitAll()
                 .anyRequest().authenticated();
 
         http.exceptionHandling()
@@ -79,6 +79,7 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
                 "/swagger-resources/**",
                 "/configuration/security",
                 "/swagger-ui.html",
-                "/webjars/**");
+                "/webjars/**",
+                "/login");
     }
 }

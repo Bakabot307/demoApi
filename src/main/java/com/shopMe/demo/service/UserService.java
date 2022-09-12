@@ -57,22 +57,29 @@ public class UserService {
 
 
 
-    public SignUpResponseDto signUp(User user,HttpServletRequest request)  throws CustomException {
-        try {
-            // save the User
-            userRepository.save(user);
-            sendVerificationEmail(request, user);
-            // generate token for user
-            final AuthenticationToken authenticationToken = new AuthenticationToken(user);
-            // save token in database
-            authenticationService.saveConfirmationToken(authenticationToken);
-            // success in creating
-            walletService.createWallet(user);
-            return new SignUpResponseDto("success", "user created successfully");
-        } catch (Exception e) {
-            // handle signup error
-            throw new CustomException(e.getMessage());
+
+    public User save(User user)  {
+        boolean isUpdatingUser = (user.getId() != null);
+        if (isUpdatingUser) {
+            User existingUser = userRepository.findById(user.getId()).get();
+
+            if (user.getPassword().isEmpty()) {
+                user.setPassword(existingUser.getPassword());
+            } else {
+                encodePassword(user);
+            }
+        } else {
+            encodePassword(user);
         }
+        return userRepository.save(user);
+    }
+
+    private void encodePassword(User user) {
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+    }
+    public void sendEmail(User user,HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
+        sendVerificationEmail(request, user);
     }
     private void sendVerificationEmail(HttpServletRequest request, User user)
             throws UnsupportedEncodingException, MessagingException {
@@ -133,12 +140,15 @@ public class UserService {
         return new SignInResponseDto ("success", token.getToken());
     }
 
-    public Optional<User> getById(Integer id) {
-        return userRepository.findById(id);
+    public User getById(Integer id) throws UserNotFoundException {
+        try {
+            return userRepository.findById(id).get();
+        } catch (NoSuchElementException ex) {
+            throw new UserNotFoundException("Could not find any user with ID " + id);
+        }
     }
 
     public boolean Verify(String code) {
-
             User customer = userRepository.findByEmailVerifyCode(code);
         System.out.println(customer.getEmailVerifyCode());
         System.out.println(customer.isEnabled());
