@@ -30,11 +30,11 @@ public class LogsController {
         return new ResponseEntity<>(logs, HttpStatus.OK);
     }
 
-    @GetMapping("/{status}")
-    public ResponseEntity<List<Logs>> getLogListByStatus(@PathVariable("status") String status) throws AuthenticationFailException {
-        List<Logs> logs = logsService.getAllLog(status);
-        return new ResponseEntity<>(logs, HttpStatus.OK);
-    }
+//    @GetMapping("/{status}")
+//    public ResponseEntity<List<Logs>> getLogListByStatus(@PathVariable("status") String status) throws AuthenticationFailException {
+//        List<Logs> logs = logsService.getAllLog(status);
+//        return new ResponseEntity<>(logs, HttpStatus.OK);
+//    }
 
     @GetMapping("/")
     public ResponseEntity<List<Logs>> getAllLogs(@RequestParam("status") String status) throws AuthenticationFailException {

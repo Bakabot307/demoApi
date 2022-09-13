@@ -4,6 +4,9 @@ import com.shopMe.demo.model.Logs;
 import com.shopMe.demo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import com.shopMe.demo.repository.*;
 
@@ -12,7 +15,7 @@ import java.util.List;
 
 @Service
 public class LogsService {
-
+public static final int LOGS_PER_PAGE = 10;
     @Autowired
     private LogsRepository logsRepository;
 
@@ -71,7 +74,27 @@ public class LogsService {
 
     }
 
-    public List<Logs> getAllLog(String status) {
-        return logsRepository.findAll();
+//    public List<Logs> getAllLog(String status) {
+//        return logsRepository.findAll();
+//    }
+
+
+    public Page<Logs> ListByPage(int pageNumber){
+
+        Pageable pageable = PageRequest.of(pageNumber -1,LOGS_PER_PAGE);
+
+        return logsRepository.findAll(pageable);
+
+    }
+
+
+    public void addLogToUserActivity(User user,String type, String status,String message){
+        Logs log = new Logs();
+        log.setUser(user);
+        log.setType(type);
+        log.setCreatedDate(new Date());
+        log.setStatus(status);
+        log.setMessage(message);
+logsRepository.save(log);
     }
 }

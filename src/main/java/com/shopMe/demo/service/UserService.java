@@ -48,7 +48,8 @@ public class UserService {
     @Autowired
     SettingService settingService;
 
-    Logger logger = LoggerFactory.getLogger(UserService.class);
+    @Autowired
+    LogsService logsService;
 
 
     public User save2(User user) {
@@ -61,8 +62,6 @@ public class UserService {
 
     public User save(User user)  {
         boolean isUpdatingUser = (user.getId() != null);
-        System.out.println(isUpdatingUser+" is updating");
-        System.out.println("password1"+ user.getPassword());
         if (isUpdatingUser) {
             User existingUser = userRepository.findById(user.getId()).get();
 
@@ -72,7 +71,6 @@ public class UserService {
                 encodePassword(user);
             }
         }
-        System.out.println("password"+ user.getPassword());
         return userRepository.save(user);
     }
 
@@ -156,8 +154,6 @@ public class UserService {
 
     public boolean Verify(String code) {
             User customer = userRepository.findByEmailVerifyCode(code);
-        System.out.println(customer.getEmailVerifyCode());
-        System.out.println(customer.isEnabled());
             if (!customer.isEnabled()) {
                 return false;
             } else {

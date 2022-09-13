@@ -26,8 +26,6 @@ public class UpdateUserDto {
     public UpdateUserDto() {
     }
 
-
-
     public String getPassword() {
         return password;
     }

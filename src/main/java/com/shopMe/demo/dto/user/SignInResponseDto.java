@@ -5,23 +5,25 @@ import com.shopMe.demo.model.User;
 import javax.persistence.Column;
 
 public class SignInResponseDto {
-    private String status;
     private String token;
+    private String refreshToken;
 
 
 
 
-    public SignInResponseDto(String status, String token) {
-        this.status = status;
+
+    public SignInResponseDto(String token, String refreshToken) {
         this.token = token;
+        this.refreshToken = refreshToken;
+
     }
 
-    public String getStatus() {
-        return status;
+    public String getRefreshToken() {
+        return refreshToken;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
     public String getToken() {

@@ -1,21 +1,21 @@
 package com.shopMe.demo.controllers;
 
+import com.shopMe.demo.Security.jwt.JwtTokenUtil;
 import com.shopMe.demo.common.ApiResponse;
 import com.shopMe.demo.config.FileUploadUtil;
-import com.shopMe.demo.dto.user.*;
+import com.shopMe.demo.dto.user.SignInDto;
+import com.shopMe.demo.dto.user.SignInResponseDto;
+import com.shopMe.demo.dto.user.SignupDto;
+import com.shopMe.demo.dto.user.UpdateUserDto;
 import com.shopMe.demo.exceptions.CustomException;
 import com.shopMe.demo.exceptions.UserNotFoundException;
 import com.shopMe.demo.model.Role;
 import com.shopMe.demo.model.User;
-import com.shopMe.demo.service.AuthenticationService;
+import com.shopMe.demo.service.LogsService;
 import com.shopMe.demo.service.UserService;
-import net.bytebuddy.asm.Advice;
 import net.bytebuddy.utility.RandomString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -25,40 +25,40 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import com.shopMe.demo.Security.jwt.JwtTokenUtil;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.function.EntityResponse;
 
 import javax.annotation.security.RolesAllowed;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
-import javax.swing.text.html.parser.Entity;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.util.Date;
 import java.util.Objects;
 
 
 @RestController
 public class UserController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenUtil.class);
     @Autowired
     UserService userService;
 
     @Autowired
     AuthenticationManager authManager;
-    @Autowired JwtTokenUtil jwtUtil;
+    @Autowired
+    JwtTokenUtil jwtUtil;
 
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    @PostMapping(value={"/signup"})
+    @Autowired
+    LogsService logsService;
+
+    @PostMapping(value = {"/signup"})
     public ResponseEntity<ApiResponse> Signup(
             @RequestBody @Valid SignupDto signupDto,
-                                 HttpServletRequest request
-    ) throws CustomException, MessagingException, UnsupportedEncodingException, UserNotFoundException {
+            HttpServletRequest request
+    ) throws CustomException, MessagingException, UnsupportedEncodingException {
 
         if (Objects.nonNull(userService.findByEmail(signupDto.getEmail()))) {
             throw new CustomException("User already exists");
@@ -83,15 +83,13 @@ public class UserController {
         User savedUser = userService.save(user);
 
 
-        if(Objects.nonNull(savedUser)){
-            userService.sendEmail(user,request);
+        if (Objects.nonNull(savedUser)) {
+            userService.sendEmail(user, request);
+            logsService.addLogToUserActivity(savedUser,"account","success","Created new account!");
             return new ResponseEntity<>(new ApiResponse(true, "created user successfully!"), HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(new ApiResponse(false, "Failed to create new user"), HttpStatus.BAD_REQUEST);
-
         }
-
-
 
 
     }
@@ -105,10 +103,9 @@ public class UserController {
 
             User user = (User) authentication.getPrincipal();
             String accessToken = jwtUtil.generateAccessToken(user);
-            SignInResponseDto response = new SignInResponseDto(user.getEmail(), accessToken);
-
+            String refreshToken = jwtUtil.generateRefreshToken(user);
+            SignInResponseDto response = new SignInResponseDto(accessToken, refreshToken);
             return ResponseEntity.ok().body(response);
-
         } catch (BadCredentialsException ex) {
             return new ResponseEntity<>(new ApiResponse(false, "Email or password is wrong!"), HttpStatus.BAD_REQUEST);
         }
@@ -116,26 +113,44 @@ public class UserController {
 
 
     @PostMapping("/verify")
-    public ResponseEntity<ApiResponse> Verify(@RequestParam @Valid String code){
+    public ResponseEntity<ApiResponse> Verify(@RequestParam @Valid String code) {
         boolean verified = userService.Verify(code);
-        if(verified){
+        if (verified) {
             return new ResponseEntity<>(new ApiResponse(true, "Verified successfully!"), HttpStatus.OK);
         }
-
         return new ResponseEntity<>(new ApiResponse(false, "Failed to verify!"), HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/refreshToken")
+    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+       String authorizationHeader = request.getHeader("Authorization");
+       if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
+           try {
+               String refreshToken =authorizationHeader.substring("Bearer ".length());
+               User user1 = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+               String accessToken = jwtUtil.generateAccessToken(user1);
+
+               SignInResponseDto responseAuth = new SignInResponseDto(accessToken, refreshToken);
+               return ResponseEntity.ok().body(responseAuth);
+           } catch (BadCredentialsException ex) {
+               return new ResponseEntity<>(new ApiResponse(false, "Something is wrong with refresh token"), HttpStatus.EXPECTATION_FAILED);
+           }
+       } else {
+           return new ResponseEntity<>(new ApiResponse(false, "Refresh token not found"), HttpStatus.NOT_FOUND);
+       }
+
     }
 
     @PutMapping("/user/edit")
     @RolesAllowed("ROLE_USER")
 
     public ResponseEntity<ApiResponse> editUser(
-                            @RequestBody @Valid UpdateUserDto updateUserDto
-                           ) throws  UserNotFoundException {
+            @RequestBody @Valid UpdateUserDto updateUserDto
+    ) throws UserNotFoundException {
 
         User user1 = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            User updatingUser = userService.getById(user1.getId());
-            updatingUser.Update(updateUserDto);
-
+        User updatingUser = userService.getById(user1.getId());
+        updatingUser.Update(updateUserDto);
         userService.save(updatingUser);
         return new ResponseEntity<>(new ApiResponse(true, "Updated user successfully!"), HttpStatus.OK);
     }
@@ -147,8 +162,6 @@ public class UserController {
             @RequestParam("image") MultipartFile multipartFile) throws IOException, UserNotFoundException {
 
         User user1 = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        System.out.println("user jwt email: "+user1.getEmail());
-        System.out.println("user jwt id" + user1.getId());
         User updatingUser = userService.getById(user1.getId());
         if (!multipartFile.isEmpty()) {
             String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
@@ -162,5 +175,4 @@ public class UserController {
         userService.updateAvatar(updatingUser);
         return new ResponseEntity<>(new ApiResponse(true, "Updated avatar successfully!"), HttpStatus.OK);
     }
-
 }
