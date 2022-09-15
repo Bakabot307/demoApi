@@ -23,14 +23,12 @@ public class TwilioSmsSender{
     }
 
 
-    public VerificationResult SmsSender(SmsRequest smsRequest) {
+    public VerificationResult SmsSender(String phone) {
         try{
-            PhoneNumber to = new PhoneNumber(smsRequest.getPhoneNumber());
-            PhoneNumber from = new PhoneNumber(twilioConfiguration.getTrialNumber());
-            String message = smsRequest.getMessage();
+            com.twilio.rest.verify.v2.Service serice = com.twilio.rest.verify.v2.Service.creator("sta otp").create();
             Verification verification  = Verification.creator(
                     twilioConfiguration.getServiceId(),
-                    smsRequest.getPhoneNumber(),
+                    phone,
                     "sms"
             ).create();
         if("approved".equals(verification.getStatus())|| "pending".equals(verification.getStatus())) {
