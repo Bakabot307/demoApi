@@ -1,7 +1,9 @@
 package com.shopMe.demo.controllers;
 
 
-import com.shopMe.demo.common.ApiResponse;
+import com.shopMe.demo.config.Twilio.SmsRequest;
+import com.shopMe.demo.config.Twilio.TwilioSmsSender;
+import com.shopMe.demo.config.Twilio.VerificationResult;
 import com.shopMe.demo.model.Market;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,15 +24,35 @@ import java.util.List;
 public class TEST {
 
 
+@Autowired
+    private TwilioSmsSender twilioSmsSender;
+
+
+
+
     @Autowired
     private MarketRepository marketRepository;
-    @GetMapping("/")
-    @RolesAllowed("ROLE_USER")
-    public ResponseEntity<ApiResponse> TEST(){
+    @GetMapping("/sms")
+    public ResponseEntity<String> TEST(SmsRequest smsRequest){
 
-        return new ResponseEntity<>(new ApiResponse(true, "failed"), HttpStatus.OK);
+        VerificationResult result=twilioSmsSender.SmsSender(smsRequest);
+        if(result.isValid())
+        {
+            return new ResponseEntity<>("Otp Sent..",HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Otp failed to sent..",HttpStatus.BAD_REQUEST);
 
+    }
 
+    @GetMapping("/sms/verify")
+    public ResponseEntity<String> TEST(String phone, String code){
+
+        VerificationResult result = twilioSmsSender.checkverification(phone,code);
+        if(result.isValid())
+        {
+            return new ResponseEntity<>("Your number is Verified",HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Something wrong/ Otp incorrect",HttpStatus.BAD_REQUEST);
 
     }
 }

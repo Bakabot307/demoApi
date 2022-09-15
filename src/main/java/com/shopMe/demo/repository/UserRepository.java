@@ -16,6 +16,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByEmail(String email);
 
+    Optional<User> findByPhoneNumber(String phoneNumber);
+
 
     @Query("SELECT u FROM User u WHERE u.emailVerifyCode = ?1")
     public User findByEmailVerifyCode(String code);

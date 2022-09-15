@@ -168,6 +168,11 @@ public class UserService {
 
     }
 
+    public User findByPhoneNumber(String phoneNumber) {Optional<User> user = userRepository. findByPhoneNumber(phoneNumber);
+        return user.orElse(null);
+
+    }
+
 
 
 

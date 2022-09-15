@@ -31,9 +31,13 @@ public class User implements UserDetails {
     @Length(min = 3,max = 255,message = "Last name must have 3-255 characters")
     private String lastName;
 
-    @Column(name = "email",length = 255,unique = true,nullable = false)
+    @Column(name = "email",length = 255,unique = true,nullable = true)
     @Email(message = "Please provide a valid email address")
     private String email;
+
+    @Column(name = "phoneNumber",length = 20,unique = true,nullable = true)
+    @NotBlank(message = "Please provide a valid phone number")
+    private String phoneNumber;
 
     @Column(name="avatar",nullable = true)
     private String avatar;
@@ -51,6 +55,7 @@ public class User implements UserDetails {
 
     @Column(name = "email_verify_code")
     private String emailVerifyCode;
+
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "users_id"), inverseJoinColumns = @JoinColumn(name = "roles_id"))
