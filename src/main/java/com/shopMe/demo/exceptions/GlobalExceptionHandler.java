@@ -18,8 +18,17 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ErrorInfo AccessDeniedException(HttpServletRequest request, HttpServletResponse response,
                                            Exception exception){
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        return new ErrorInfo(request,response,exception);
+
+        return new ErrorInfo(request,exception);
+    }
+
+    @ExceptionHandler(AuthenticationFailException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public ErrorInfo AuthenticationFailException(HttpServletRequest request, HttpServletResponse response,
+                                           Exception exception){
+
+        return new ErrorInfo(request,exception);
     }
 
 //

@@ -2,10 +2,13 @@ package com.shopMe.demo.config;
 
 public class MessageStrings {
 
-    public static final String USER_NOT_PERMITTED = "user is not permitted to perform this operation";
     public static final String AUTH_TOEKN_NOT_PRESENT = "authentication token not present";
     public static final String AUTH_TOEKN_NOT_VALID = "authentication token not valid";
-    public static final String USER_CREATED = "user created successfully";
-    public static final String ID_NOT_PRESENT = "primary key is required for updating";
-    public static final String WRONG_PASSWORD = "please check the pass";
+
+    public static final String USER_PASSWORD_WRONG = "Wrong password ";
+
+    public static final String USER_NOT_FOUND = "User not found ";
+    public static final String USER_INFO_NOT_MATCH = "Email and password is wrong";
+    public static final String USER_OTP_WRONG = "Otp is wrong";
+    public static final String USER_PHONE_NOT_FOUND = "Phone number not found";
 }

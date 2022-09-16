@@ -122,12 +122,12 @@ public class UserService {
         // first find User by email
         User user = userRepository.findByEmail(signInDto.getEmail()).get();
         if(!Objects.nonNull(user)){
-            throw new AuthenticationFailException("user not present");
+            throw new AuthenticationFailException(MessageStrings.USER_NOT_FOUND);
         }
         // check if password is right
         if (!user.getPassword().equals(passwordEncoder.encode(signInDto.getPassword()))){
             // passwords do not match
-            throw  new AuthenticationFailException(MessageStrings.WRONG_PASSWORD);
+            throw  new AuthenticationFailException(MessageStrings.USER_PASSWORD_WRONG);
         }
 
         AuthenticationToken token = authenticationService.getToken(user);
@@ -144,7 +144,7 @@ public class UserService {
         try {
             return userRepository.findById(id).get();
         } catch (NoSuchElementException ex) {
-            throw new UserNotFoundException("Could not find any user with ID " + id);
+            throw new UserNotFoundException(MessageStrings.USER_NOT_FOUND + id);
         }
     }
 
@@ -172,11 +172,11 @@ public class UserService {
     public boolean isLogin(String phoneNumber, String password) throws AuthenticationFailException {
         User user = findByPhoneNumber(phoneNumber);
         if(!Objects.nonNull(user)){
-            throw new AuthenticationFailException("user not present");
+            throw new AuthenticationFailException(MessageStrings.USER_NOT_FOUND);
         }
         System.out.println(passwordEncoder.matches(password,user.getPassword()));
         if (!passwordEncoder.matches(password,user.getPassword())){
-            throw new AuthenticationFailException(MessageStrings.WRONG_PASSWORD);
+            throw new AuthenticationFailException(MessageStrings.USER_PASSWORD_WRONG);
         }
         return true;
     }

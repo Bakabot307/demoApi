@@ -3,6 +3,7 @@ package com.shopMe.demo.controllers;
 import com.shopMe.demo.Security.jwt.JwtTokenUtil;
 import com.shopMe.demo.common.ApiResponse;
 import com.shopMe.demo.config.FileUploadUtil;
+import com.shopMe.demo.config.MessageStrings;
 import com.shopMe.demo.config.Twilio.TwilioSmsSender;
 import com.shopMe.demo.config.Twilio.VerificationResult;
 import com.shopMe.demo.dto.user.*;
@@ -171,23 +172,23 @@ public class UserController {
     }
 
     @PostMapping("/phoneLogin")
-    public ResponseEntity<?> LoginWithPhone(@RequestBody @Valid PhoneLoginDto request) throws AuthenticationFailException, CustomException {
+    public ResponseEntity<?> LoginWithPhone(@RequestBody @Valid PhoneLoginDto request) throws AuthenticationFailException {
             User user = userService.findByPhoneNumber(request.getPhoneNumber());
             if (!Objects.nonNull(user)) {
-                return new ResponseEntity<>(new ApiResponse(false, "Phone number not found!"), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new ApiResponse(false, MessageStrings.USER_PHONE_NOT_FOUND), HttpStatus.BAD_REQUEST);
             }
 
         if (userService.isLogin(request.getPhoneNumber(), request.getPassword())) {
                 VerificationResult result = twilioSmsSender.checkverification(request.getPhoneNumber(), request.getCode());
                 if(!result.isValid()){
-                    return new ResponseEntity<>(new ApiResponse(false, "OTP is wrong!"), HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(new ApiResponse(false, MessageStrings.USER_OTP_WRONG), HttpStatus.BAD_REQUEST);
                 }
                 String accessToken = jwtUtil.generateAccessToken(user);
                 String refreshToken = jwtUtil.generateRefreshToken(user);
                 SignInResponseDto response = new SignInResponseDto(accessToken, refreshToken);
                 return ResponseEntity.ok().body(response);
             } else {
-                return new ResponseEntity<>(new ApiResponse(false, "Email or password is wrong!"), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new ApiResponse(false, MessageStrings.USER_INFO_NOT_MATCH), HttpStatus.BAD_REQUEST);
             }
 
     }

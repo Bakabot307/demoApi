@@ -6,23 +6,20 @@ import java.util.Date;
 
 public class ErrorInfo {
     private final Date timestamp;
-    private final Integer status;
     private final String url;
     private final String message;
 
 
 
-    public ErrorInfo(String url, String message,Date timestamp,Integer status) {
+    public ErrorInfo(String url, String message,Date timestamp) {
         this.url = url;
         this.message = message;
         this.timestamp= timestamp;
-        this.status=status;
     }
 
-    public ErrorInfo(HttpServletRequest request,HttpServletResponse response, Exception ex) {
+    public ErrorInfo(HttpServletRequest request, Exception ex) {
         this.url = request.getRequestURL().toString();
         this.message = ex.getMessage();
-        this.status = response.getStatus();
         this.timestamp = new Date();
     }
 
@@ -40,7 +37,4 @@ public class ErrorInfo {
         return timestamp;
     }
 
-    public Integer getStatus() {
-        return status;
-    }
 }
