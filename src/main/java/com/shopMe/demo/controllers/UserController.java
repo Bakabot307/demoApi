@@ -174,22 +174,20 @@ public class UserController {
     public ResponseEntity<?> LoginWithPhone(@RequestBody @Valid PhoneLoginDto request) throws AuthenticationFailException, CustomException {
             User user = userService.findByPhoneNumber(request.getPhoneNumber());
             if (!Objects.nonNull(user)) {
-                throw new AuthenticationFailException("user not present");
+                return new ResponseEntity<>(new ApiResponse(false, "Phone number not found!"), HttpStatus.BAD_REQUEST);
             }
 
-
-            VerificationResult result = twilioSmsSender.checkverification(request.getPhoneNumber(), request.getCode());
-             if(!result.isValid()){
-            return new ResponseEntity<>("Something wrong/ Otp incorrect",HttpStatus.BAD_REQUEST);
-              }
-
-            if (userService.isLogin(request.getPhoneNumber(), request.getPassword()) && result.isValid()) {
+        if (userService.isLogin(request.getPhoneNumber(), request.getPassword())) {
+                VerificationResult result = twilioSmsSender.checkverification(request.getPhoneNumber(), request.getCode());
+                if(!result.isValid()){
+                    return new ResponseEntity<>(new ApiResponse(false, "OTP is wrong!"), HttpStatus.BAD_REQUEST);
+                }
                 String accessToken = jwtUtil.generateAccessToken(user);
                 String refreshToken = jwtUtil.generateRefreshToken(user);
                 SignInResponseDto response = new SignInResponseDto(accessToken, refreshToken);
                 return ResponseEntity.ok().body(response);
             } else {
-                return new ResponseEntity<>("Email or password is wrong",HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new ApiResponse(false, "Email or password is wrong!"), HttpStatus.BAD_REQUEST);
             }
 
     }
