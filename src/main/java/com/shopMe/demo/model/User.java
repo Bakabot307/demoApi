@@ -234,6 +234,14 @@ public class User implements UserDetails {
         return firstName + " " + lastName;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
     @Transient
     public String getPhotosImagePath() {
         if (id == null || avatar == null)

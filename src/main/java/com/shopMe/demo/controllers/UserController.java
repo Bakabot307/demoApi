@@ -3,6 +3,8 @@ package com.shopMe.demo.controllers;
 import com.shopMe.demo.Security.jwt.JwtTokenUtil;
 import com.shopMe.demo.common.ApiResponse;
 import com.shopMe.demo.config.FileUploadUtil;
+import com.shopMe.demo.config.Twilio.TwilioSmsSender;
+import com.shopMe.demo.config.Twilio.VerificationResult;
 import com.shopMe.demo.dto.user.*;
 import com.shopMe.demo.exceptions.CustomException;
 import com.shopMe.demo.exceptions.UserNotFoundException;
@@ -51,6 +53,9 @@ public class UserController {
     @Autowired
     LogsService logsService;
 
+    @Autowired
+    TwilioSmsSender twilioSmsSender;
+
     @PostMapping(value = {"/signup"})
     public ResponseEntity<ApiResponse> Signup(
             @RequestBody @Valid SignupDto signupDto,
@@ -92,10 +97,10 @@ public class UserController {
     }
 
     @PostMapping(value = {"/phoneSignup"})
-    public ResponseEntity<ApiResponse> SignupWithPhone(
+    public ResponseEntity<?> SignupWithPhone(
             @RequestBody @Valid PhoneSignupDto signupDto,
             HttpServletRequest request
-    ) throws CustomException, MessagingException, UnsupportedEncodingException {
+    ) throws CustomException {
 
         if(isPhoneNumberValid(signupDto.getPhoneNumber())){
             throw new CustomException("Phone number is not valid");
@@ -103,39 +108,50 @@ public class UserController {
         if (Objects.nonNull(userService.findByPhoneNumber(signupDto.getPhoneNumber()))) {
             throw new CustomException("User already exists");
         }
-        // first encrypt the password
-        String encryptedPassword;
-        System.out.println(signupDto.getPassword());
-        System.out.println(signupDto.getPhoneNumber());
 
-        encryptedPassword = passwordEncoder.encode(signupDto.getPassword());
-        System.out.println(encryptedPassword);
-        User user = new User(signupDto.getFirstName(), signupDto.getLastName(), signupDto.getPhoneNumber(), encryptedPassword);
-        user.setCreatedDate(new Date());
-        user.setEnabled(false);
-        user.addRole(new Role(2L));
+        VerificationResult result = twilioSmsSender.checkverification(signupDto.getPhoneNumber(), signupDto.getCode());
+        if(result.isValid())
+        {
+            String encryptedPassword;
+            System.out.println(signupDto.getPassword());
+            System.out.println(signupDto.getPhoneNumber());
 
-        String randomCode = RandomString.make(64);
-        user.setEmailVerifyCode(randomCode);
-        user.setAvatar(null);
+            encryptedPassword = passwordEncoder.encode(signupDto.getPassword());
+            System.out.println(encryptedPassword);
+            User user = new User();
+            user.setFirstName(signupDto.getFirstName());
+            user.setLastName(signupDto.getLastName());
+            user.setPassword(encryptedPassword);
+            user.setPhoneNumber(signupDto.getPhoneNumber());
+            user.setCreatedDate(new Date());
+            user.setEnabled(true);
+            user.addRole(new Role(2L));
+
+            String randomCode = RandomString.make(64);
+            user.setEmailVerifyCode(randomCode);
+            user.setAvatar(null);
 
 
-        User savedUser = userService.save(user);
+            User savedUser = userService.save(user);
 
 
-        if (Objects.nonNull(savedUser)) {
-            userService.sendEmail(user, request);
-            logsService.addLogToUserActivity(savedUser,"account","success","Created new account!");
-            return new ResponseEntity<>(new ApiResponse(true, "created user successfully!"), HttpStatus.CREATED);
+            if (Objects.nonNull(savedUser)) {
+                logsService.addLogToUserActivity(savedUser,"account","success","Created new account!");
+                return new ResponseEntity<>(new ApiResponse(true, "created user successfully!"), HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>(new ApiResponse(false, "Failed to create new user"), HttpStatus.BAD_REQUEST);
+            }
         } else {
-            return new ResponseEntity<>(new ApiResponse(false, "Failed to create new user"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Something wrong/ Otp incorrect",HttpStatus.BAD_REQUEST);
         }
+
+
 
 
     }
 
     private boolean isPhoneNumberValid(String phoneNumber) {
-        String allCountryRegex = "^(\\+\\d{1,3}( )?)?((\\(\\d{1,3}\\))|\\d{1,3})[- .]?\\d{3,4}[- .]?\\d{4}$";
+        String allCountryRegex ="\\+9665\\d{8}|05\\d{8}|\\+1\\(\\d{3}\\)\\d{3}-\\d{4}|\\+1\\d{10}|\\d{3}-\\d{3}-\\d{4}";
         return phoneNumber.matches(allCountryRegex);
     }
 
@@ -157,7 +173,16 @@ public class UserController {
     }
 
 
+    @GetMapping("/phoneSignup/sms")
+    public ResponseEntity<String> TEST(String phone){
+        VerificationResult result = twilioSmsSender.SmsSender(phone);
+        if(result.isValid())
+        {
+            return new ResponseEntity<>("Otp Sent..",HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Otp failed to sent..",HttpStatus.BAD_REQUEST);
 
+    }
 
     @PostMapping("/verify")
     public ResponseEntity<ApiResponse> Verify(@RequestParam @Valid String code) {

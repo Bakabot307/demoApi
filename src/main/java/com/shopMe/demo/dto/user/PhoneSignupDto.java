@@ -28,6 +28,10 @@ public class PhoneSignupDto {
     @Length(max = 255,message = "Last name must have below 255 characters")
     private String password;
 
+    @Column(name = "code",length = 6, nullable = false)
+    @NotBlank(message = "code cannot be null")
+    private String code;
+
     public PhoneSignupDto() {
     }
 
@@ -61,5 +65,13 @@ public class PhoneSignupDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

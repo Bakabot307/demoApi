@@ -25,7 +25,6 @@ public class TwilioSmsSender{
 
     public VerificationResult SmsSender(String phone) {
         try{
-            com.twilio.rest.verify.v2.Service serice = com.twilio.rest.verify.v2.Service.creator("sta otp").create();
             Verification verification  = Verification.creator(
                     twilioConfiguration.getServiceId(),
                     phone,
