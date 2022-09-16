@@ -14,6 +14,7 @@ import com.shopMe.demo.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -116,11 +117,6 @@ public class UserService {
     }
 
 
-//   public User getOwner() {
-////fix this
-//        User owner = userRepository.findByRole(new Role());
-//       return owner;
-//    }
 
     public SignInResponseDto signIn(SignInDto signInDto) throws AuthenticationFailException, CustomException {
         // first find User by email
@@ -171,6 +167,18 @@ public class UserService {
     public User findByPhoneNumber(String phoneNumber) {Optional<User> user = userRepository. findByPhoneNumber(phoneNumber);
         return user.orElse(null);
 
+    }
+
+    public boolean isLogin(String phoneNumber, String password) throws AuthenticationFailException {
+        User user = findByPhoneNumber(phoneNumber);
+        if(!Objects.nonNull(user)){
+            throw new AuthenticationFailException("user not present");
+        }
+        System.out.println(passwordEncoder.matches(password,user.getPassword()));
+        if (!passwordEncoder.matches(password,user.getPassword())){
+            throw new AuthenticationFailException(MessageStrings.WRONG_PASSWORD);
+        }
+        return true;
     }
 
 

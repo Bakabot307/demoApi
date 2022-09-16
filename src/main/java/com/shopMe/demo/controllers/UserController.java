@@ -6,6 +6,7 @@ import com.shopMe.demo.config.FileUploadUtil;
 import com.shopMe.demo.config.Twilio.TwilioSmsSender;
 import com.shopMe.demo.config.Twilio.VerificationResult;
 import com.shopMe.demo.dto.user.*;
+import com.shopMe.demo.exceptions.AuthenticationFailException;
 import com.shopMe.demo.exceptions.CustomException;
 import com.shopMe.demo.exceptions.UserNotFoundException;
 import com.shopMe.demo.model.Role;
@@ -98,8 +99,7 @@ public class UserController {
 
     @PostMapping(value = {"/phoneSignup"})
     public ResponseEntity<?> SignupWithPhone(
-            @RequestBody @Valid PhoneSignupDto signupDto,
-            HttpServletRequest request
+            @RequestBody @Valid PhoneSignupDto signupDto
     ) throws CustomException {
 
         if(isPhoneNumberValid(signupDto.getPhoneNumber())){
@@ -113,9 +113,6 @@ public class UserController {
         if(result.isValid())
         {
             String encryptedPassword;
-            System.out.println(signupDto.getPassword());
-            System.out.println(signupDto.getPhoneNumber());
-
             encryptedPassword = passwordEncoder.encode(signupDto.getPassword());
             System.out.println(encryptedPassword);
             User user = new User();
@@ -130,14 +127,15 @@ public class UserController {
             String randomCode = RandomString.make(64);
             user.setEmailVerifyCode(randomCode);
             user.setAvatar(null);
-
-
             User savedUser = userService.save(user);
 
 
             if (Objects.nonNull(savedUser)) {
                 logsService.addLogToUserActivity(savedUser,"account","success","Created new account!");
-                return new ResponseEntity<>(new ApiResponse(true, "created user successfully!"), HttpStatus.CREATED);
+                String accessToken = jwtUtil.generateAccessToken(user);
+                String refreshToken = jwtUtil.generateRefreshToken(user);
+                SignInResponseDto response = new SignInResponseDto(accessToken, refreshToken);
+                return ResponseEntity.ok().body(response);
             } else {
                 return new ResponseEntity<>(new ApiResponse(false, "Failed to create new user"), HttpStatus.BAD_REQUEST);
             }
@@ -172,9 +170,34 @@ public class UserController {
         }
     }
 
+    @PostMapping("/phoneLogin")
+    public ResponseEntity<?> LoginWithPhone(@RequestBody @Valid PhoneLoginDto request) throws AuthenticationFailException, CustomException {
+            User user = userService.findByPhoneNumber(request.getPhoneNumber());
+            if (!Objects.nonNull(user)) {
+                throw new AuthenticationFailException("user not present");
+            }
+
+
+            VerificationResult result = twilioSmsSender.checkverification(request.getPhoneNumber(), request.getCode());
+             if(!result.isValid()){
+            return new ResponseEntity<>("Something wrong/ Otp incorrect",HttpStatus.BAD_REQUEST);
+              }
+
+            if (userService.isLogin(request.getPhoneNumber(), request.getPassword()) && result.isValid()) {
+                String accessToken = jwtUtil.generateAccessToken(user);
+                String refreshToken = jwtUtil.generateRefreshToken(user);
+                SignInResponseDto response = new SignInResponseDto(accessToken, refreshToken);
+                return ResponseEntity.ok().body(response);
+            } else {
+                return new ResponseEntity<>("Email or password is wrong",HttpStatus.BAD_REQUEST);
+            }
+
+    }
+
+
 
     @GetMapping("/phoneSignup/sms")
-    public ResponseEntity<String> TEST(String phone){
+    public ResponseEntity<String> SendCode(String phone){
         VerificationResult result = twilioSmsSender.SmsSender(phone);
         if(result.isValid())
         {
