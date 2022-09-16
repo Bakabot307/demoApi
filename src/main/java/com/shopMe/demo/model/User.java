@@ -36,7 +36,6 @@ public class User implements UserDetails {
     private String email;
 
     @Column(name = "phoneNumber",length = 20,unique = true,nullable = true)
-    @NotBlank(message = "Please provide a valid phone number")
     private String phoneNumber;
 
     @Column(name="avatar",nullable = true)
