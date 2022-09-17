@@ -1,15 +1,10 @@
 package com.shopMe.demo.config.Twilio;
 
-import com.shopMe.demo.common.ApiResponse;
+
 import com.twilio.exception.ApiException;
-import com.twilio.rest.api.v2010.account.Message;
-import com.twilio.rest.api.v2010.account.MessageCreator;
 import com.twilio.rest.verify.v2.service.Verification;
 import com.twilio.rest.verify.v2.service.VerificationCheck;
-import com.twilio.type.PhoneNumber;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -51,7 +46,7 @@ public class TwilioSmsSender{
             VerificationCheck verification = VerificationCheck.creator(twilioConfiguration.getServiceId())
                     .setTo(phone)
                     .setCode(code)
-                    .create();
+                                        .create();
             if("approved".equals(verification.getStatus())) {
                 return new VerificationResult(verification.getSid());
             }

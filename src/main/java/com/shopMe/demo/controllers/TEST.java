@@ -28,6 +28,7 @@ public class TEST {
     @GetMapping("/sms")
     public ResponseEntity<String> TEST(String phone){
         VerificationResult result = twilioSmsSender.SmsSender(phone);
+
         if(result.isValid())
         {
             return new ResponseEntity<>("Otp Sent..",HttpStatus.OK);
