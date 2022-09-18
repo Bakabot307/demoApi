@@ -206,7 +206,7 @@ public class UserController {
 
     }
 
-    @PostMapping("/verify")
+    @GetMapping("/verify")
     public ResponseEntity<ApiResponse> Verify(@RequestParam @Valid String code) {
         boolean verified = userService.Verify(code);
         if (verified) {
