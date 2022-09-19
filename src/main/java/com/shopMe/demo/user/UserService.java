@@ -1,20 +1,21 @@
-package com.shopMe.demo.service;
+package com.shopMe.demo.user;
 
 
 import com.shopMe.demo.Settings.EmailSettingBag;
 import com.shopMe.demo.Utility;
 import com.shopMe.demo.config.MessageStrings;
-import com.shopMe.demo.dto.user.*;
 import com.shopMe.demo.exceptions.AuthenticationFailException;
 import com.shopMe.demo.exceptions.CustomException;
-import com.shopMe.demo.exceptions.UserNotFoundException;
 import com.shopMe.demo.model.AuthenticationToken;
-import com.shopMe.demo.model.User;
-import com.shopMe.demo.repository.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.shopMe.demo.service.AuthenticationService;
+import com.shopMe.demo.service.LogsService;
+import com.shopMe.demo.Settings.SettingService;
+import com.shopMe.demo.service.WalletService;
+import com.shopMe.demo.user.userDTO.SignInDto;
+import com.shopMe.demo.user.userDTO.SignInResponseDto;
+import com.shopMe.demo.user.userDTO.UserDataDto;
+import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -148,12 +149,15 @@ public class UserService {
         }
     }
 
-    public boolean Verify(String code) {
-            User customer = userRepository.findByEmailVerifyCode(code);
-            if (!customer.isEnabled()) {
+    public boolean Verify(String code) throws UserNotFoundException {
+            User user = userRepository.findByEmailVerifyCode(code);
+            if(user==null){
+                throw new UserNotFoundException(MessageStrings.USER_NOT_FOUND);
+            }
+            if (!user.isEnabled() ) {
                 return false;
             } else {
-                userRepository.enable(customer.getId());
+                userRepository.enable(user.getId());
                 return true;
             }
 
@@ -179,6 +183,34 @@ public class UserService {
             throw new AuthenticationFailException(MessageStrings.USER_PASSWORD_WRONG);
         }
         return true;
+    }
+
+    public String updateResetPasswordToken(String email) throws UserNotFoundException {
+        Optional<User> user = userRepository.findByEmail(email);
+
+        if((user.isPresent())){
+            String token = RandomString.make(64);
+            user.get().setResetPasswordCode(token);
+            userRepository.save(user.get());
+
+            return token;
+        } else {
+            throw  new UserNotFoundException(MessageStrings.USER_NOT_FOUND + email);
+        }
+    }
+
+    public User getByResetPasswordCode(String token){
+        return userRepository.findByResetPasswordCode(token);
+    }
+
+    public void updatePassword(User user, String newPassword) throws UserNotFoundException {
+        if(user==null){
+            throw new UserNotFoundException(MessageStrings.USER_NOT_FOUND + "invalid token");
+        }
+        user.setPassword(newPassword);
+        user.setResetPasswordCode(null);
+        encodePassword(user);
+        userRepository.save(user);
     }
 
 

@@ -1,5 +1,7 @@
 package com.shopMe.demo.model;
 
+import com.shopMe.demo.user.User;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -70,7 +72,7 @@ public class Logs {
         this.type = type;
     }
 
-    public Logs(String status, double sta, String message, Date createdDate, Integer receiverId, User user,String type) {
+    public Logs(String status, double sta, String message, Date createdDate, Integer receiverId, User user, String type) {
         this.status = status;
         this.sta = sta;
         this.money = money;

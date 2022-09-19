@@ -1,8 +1,4 @@
-package com.shopMe.demo.dto.user;
-
-import com.shopMe.demo.model.User;
-
-import javax.persistence.Column;
+package com.shopMe.demo.user.userDTO;
 
 public class SignInResponseDto {
     private String token;

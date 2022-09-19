@@ -8,7 +8,7 @@
 //import com.shopMe.demo.exceptions.CartItemNotExistException;
 //import com.shopMe.demo.exceptions.ProductNotExistException;
 //import com.shopMe.demo.model.Product;
-//import com.shopMe.demo.model.User;
+//import com.shopMe.demo.user.User;
 //import com.shopMe.demo.service.AuthenticationService;
 //import com.shopMe.demo.service.CartService;
 //import com.shopMe.demo.service.CategoryService;

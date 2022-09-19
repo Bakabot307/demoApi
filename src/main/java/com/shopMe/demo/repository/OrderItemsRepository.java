@@ -2,12 +2,11 @@ package com.shopMe.demo.repository;
 
 import com.shopMe.demo.model.OrderItem;
 import com.shopMe.demo.model.Product;
-import com.shopMe.demo.model.User;
+import com.shopMe.demo.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface OrderItemsRepository extends JpaRepository<OrderItem,Integer> {

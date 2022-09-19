@@ -1,5 +1,7 @@
 package com.shopMe.demo.model;
 
+import com.shopMe.demo.user.User;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

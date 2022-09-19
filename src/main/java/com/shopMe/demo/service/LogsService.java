@@ -1,7 +1,8 @@
 package com.shopMe.demo.service;
 
 import com.shopMe.demo.model.Logs;
-import com.shopMe.demo.model.User;
+import com.shopMe.demo.user.User;
+import com.shopMe.demo.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Pageable;

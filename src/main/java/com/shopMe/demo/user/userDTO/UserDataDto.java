@@ -1,4 +1,4 @@
-package com.shopMe.demo.dto.user;
+package com.shopMe.demo.user.userDTO;
 
 public class UserDataDto {
     private Integer id;

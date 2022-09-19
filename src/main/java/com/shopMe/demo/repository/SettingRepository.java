@@ -1,7 +1,7 @@
 package com.shopMe.demo.repository;
 
-import com.shopMe.demo.model.Settings.Setting;
-import com.shopMe.demo.model.Settings.SettingCategory;
+import com.shopMe.demo.Settings.model.Setting;
+import com.shopMe.demo.Settings.model.SettingCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

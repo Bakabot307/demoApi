@@ -1,8 +1,5 @@
 package com.shopMe.demo.dto.Log;
 
-import com.shopMe.demo.model.User;
-
-import javax.persistence.*;
 import java.util.Date;
 
 public class LogDto {

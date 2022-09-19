@@ -1,9 +1,8 @@
 package com.shopMe.demo.Security.jwt;
 
 import java.util.Date;
-import java.util.Set;
 
-import com.shopMe.demo.model.User;
+import com.shopMe.demo.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,8 +1,7 @@
 package com.shopMe.demo.repository;
 
 import com.shopMe.demo.model.Logs;
-import com.shopMe.demo.model.User;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.shopMe.demo.user.User;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 

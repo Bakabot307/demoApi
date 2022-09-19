@@ -1,7 +1,7 @@
 package com.shopMe.demo.Settings;
 
-import com.shopMe.demo.model.Settings.Setting;
-import com.shopMe.demo.model.Settings.SettingBag;
+import com.shopMe.demo.Settings.model.Setting;
+import com.shopMe.demo.Settings.model.SettingBag;
 
 import java.util.List;
 

@@ -1,13 +1,15 @@
-package com.shopMe.demo.model;
+package com.shopMe.demo.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.shopMe.demo.dto.user.UpdateUserDto;
+import com.shopMe.demo.model.Logs;
+import com.shopMe.demo.model.Market;
+import com.shopMe.demo.model.OrderItem;
+import com.shopMe.demo.model.Role;
+import com.shopMe.demo.user.userDTO.UpdateUserDto;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -52,8 +54,17 @@ public class User implements UserDetails {
     @Column(name = "enabled")
     private Boolean enabled;
 
+    @Column(name = "phone_verify")
+    private Boolean phoneEnabled;
+
+    @Column(name = "email_verified")
+    private Boolean emailVerified;
+
     @Column(name = "email_verify_code")
     private String emailVerifyCode;
+
+    @Column(name = "reset_password_code")
+    private String resetPasswordCode;
 
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -159,6 +170,30 @@ public class User implements UserDetails {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Boolean getPhoneEnabled() {
+        return phoneEnabled;
+    }
+
+    public void setPhoneEnabled(Boolean phoneEnabled) {
+        this.phoneEnabled = phoneEnabled;
+    }
+
+    public Boolean getEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(Boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    public String getResetPasswordCode() {
+        return resetPasswordCode;
+    }
+
+    public void setResetPasswordCode(String resetPasswordCode) {
+        this.resetPasswordCode = resetPasswordCode;
     }
 
     public List<Logs> getLogs() {

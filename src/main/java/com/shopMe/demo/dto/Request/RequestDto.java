@@ -1,13 +1,5 @@
 package com.shopMe.demo.dto.Request;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.shopMe.demo.model.User;
-import com.shopMe.demo.model.Wallet;
-
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-
 public class RequestDto {
 
     private String status;

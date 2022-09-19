@@ -2,6 +2,7 @@ package com.shopMe.demo.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.shopMe.demo.user.User;
 
 import javax.persistence.*;
 import java.util.Date;

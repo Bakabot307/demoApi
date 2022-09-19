@@ -1,8 +1,8 @@
-package com.shopMe.demo.service;
+package com.shopMe.demo.Settings;
 
 import com.shopMe.demo.Settings.EmailSettingBag;
-import com.shopMe.demo.model.Settings.Setting;
-import com.shopMe.demo.model.Settings.SettingCategory;
+import com.shopMe.demo.Settings.model.Setting;
+import com.shopMe.demo.Settings.model.SettingCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.shopMe.demo.repository.*;

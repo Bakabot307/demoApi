@@ -4,7 +4,7 @@
 //import com.shopMe.demo.exceptions.AuthenticationFailException;
 //import com.shopMe.demo.exceptions.OrderNotFoundException;
 //import com.shopMe.demo.model.Order;
-//import com.shopMe.demo.model.User;
+//import com.shopMe.demo.user.User;
 //import com.shopMe.demo.service.AuthenticationService;
 //import com.shopMe.demo.service.OrderService;
 //import org.springframework.beans.factory.annotation.Autowired;

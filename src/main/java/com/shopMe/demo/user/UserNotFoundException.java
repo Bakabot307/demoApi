@@ -1,4 +1,4 @@
-package com.shopMe.demo.exceptions;
+package com.shopMe.demo.user;
 
 public class UserNotFoundException extends Exception {
 

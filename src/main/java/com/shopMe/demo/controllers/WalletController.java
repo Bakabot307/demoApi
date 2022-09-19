@@ -5,7 +5,7 @@ import com.shopMe.demo.dto.Request.WithdrawDto;
 import com.shopMe.demo.dto.wallet.WalletDto;
 import com.shopMe.demo.exceptions.AuthenticationFailException;
 import com.shopMe.demo.exceptions.ProductNotExistException;
-import com.shopMe.demo.model.User;
+import com.shopMe.demo.user.User;
 import com.shopMe.demo.service.AuthenticationService;
 import com.shopMe.demo.service.LogsService;
 import com.shopMe.demo.service.RequestService;

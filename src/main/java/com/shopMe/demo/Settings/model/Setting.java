@@ -1,4 +1,4 @@
-package com.shopMe.demo.model.Settings;
+package com.shopMe.demo.Settings.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

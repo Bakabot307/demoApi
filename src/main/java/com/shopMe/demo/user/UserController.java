@@ -1,23 +1,26 @@
-package com.shopMe.demo.controllers;
+package com.shopMe.demo.user;
 
 import com.shopMe.demo.Security.jwt.JwtTokenUtil;
+import com.shopMe.demo.Settings.EmailSettingBag;
+import com.shopMe.demo.Settings.SettingService;
+import com.shopMe.demo.Utility;
 import com.shopMe.demo.common.ApiResponse;
 import com.shopMe.demo.config.FileUploadUtil;
 import com.shopMe.demo.config.MessageStrings;
 import com.shopMe.demo.config.Twilio.TwilioSmsSender;
 import com.shopMe.demo.config.Twilio.VerificationResult;
-import com.shopMe.demo.dto.user.*;
+
 import com.shopMe.demo.exceptions.AuthenticationFailException;
 import com.shopMe.demo.exceptions.CustomException;
-import com.shopMe.demo.exceptions.UserNotFoundException;
 import com.shopMe.demo.model.Role;
-import com.shopMe.demo.model.User;
 import com.shopMe.demo.service.LogsService;
-import com.shopMe.demo.service.UserService;
+import com.shopMe.demo.user.userDTO.*;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
 import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -57,6 +61,10 @@ public class UserController {
 
     @Autowired
     TwilioSmsSender twilioSmsSender;
+
+    @Autowired
+    SettingService settingService;
+
 
     @PostMapping(value = {"/signup"})
     public ResponseEntity<ApiResponse> Signup(
@@ -130,7 +138,6 @@ public class UserController {
             user.setAvatar(null);
             User savedUser = userService.save(user);
 
-
             if (Objects.nonNull(savedUser)) {
                 logsService.addLogToUserActivity(savedUser,"account","success","Created new account!");
                 String accessToken = jwtUtil.generateAccessToken(user);
@@ -167,7 +174,7 @@ public class UserController {
             SignInResponseDto response = new SignInResponseDto(accessToken, refreshToken);
             return ResponseEntity.ok().body(response);
         } catch (BadCredentialsException ex) {
-            return new ResponseEntity<>(new ApiResponse(false, "Email or password is wrong!"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiResponse(false, MessageStrings.USER_INFO_NOT_MATCH), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -179,10 +186,6 @@ public class UserController {
             }
 
         if (userService.isLogin(request.getPhoneNumber(), request.getPassword())) {
-                VerificationResult result = twilioSmsSender.checkverification(request.getPhoneNumber(), request.getCode());
-                if(!result.isValid()){
-                    return new ResponseEntity<>(new ApiResponse(false, MessageStrings.USER_OTP_WRONG), HttpStatus.BAD_REQUEST);
-                }
                 String accessToken = jwtUtil.generateAccessToken(user);
                 String refreshToken = jwtUtil.generateRefreshToken(user);
                 SignInResponseDto response = new SignInResponseDto(accessToken, refreshToken);
@@ -196,7 +199,7 @@ public class UserController {
 
 
     @GetMapping("/phoneSignup/sms")
-    public ResponseEntity<String> SendCode(String phone){
+    public ResponseEntity<String> SendCode(@RequestParam String phone){
         VerificationResult result = twilioSmsSender.SmsSender(phone);
         if(result.isValid())
         {
@@ -207,12 +210,78 @@ public class UserController {
     }
 
     @GetMapping("/verify")
-    public ResponseEntity<ApiResponse> Verify(@RequestParam @Valid String code) {
-        boolean verified = userService.Verify(code);
+    public ResponseEntity<ApiResponse> Verify(@RequestParam String code) {
+        boolean verified = false;
+        try {
+            verified = userService.Verify(code);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(new ApiResponse(false, MessageStrings.USER_NOT_FOUND), HttpStatus.BAD_REQUEST);
+        }
         if (verified) {
             return new ResponseEntity<>(new ApiResponse(true, "Verified successfully!"), HttpStatus.OK);
         }
         return new ResponseEntity<>(new ApiResponse(false, "Failed to verify!"), HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/forget_password")
+    public ResponseEntity<?> forgotPassword(HttpServletRequest request,
+                                            @RequestParam String email){
+        try {
+            String token = userService.updateResetPasswordToken(email);
+            String link = Utility.getSiteURL(request)+ "/reset_password?token=" + token;
+            System.out.println("email " + email);
+            System.out.println("link " + link);
+            try {
+                sendEmail(link,email);
+            } catch (MessagingException | UnsupportedEncodingException e) {
+                return new ResponseEntity<>("Failed to send request", HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>("OK",HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(MessageStrings.USER_NOT_FOUND, HttpStatus.BAD_REQUEST);
+        }
+
+
+    }
+
+    @GetMapping("reset_password")
+    public ResponseEntity<?> resetPassword(@RequestParam("token") String token,
+                                           @RequestParam("newPassword") String newPassword) {
+        User user = userService.getByResetPasswordCode(token);
+        if (user !=null) {
+            try {
+                userService.updatePassword(user,newPassword);
+            } catch (UserNotFoundException e) {
+                return new ResponseEntity<>(MessageStrings.USER_NOT_FOUND, HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>("OK",HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Token is invalid!", HttpStatus.BAD_REQUEST);
+    }
+
+    private void sendEmail(String link, String email) throws MessagingException, UnsupportedEncodingException {
+        EmailSettingBag emailSetting = settingService.getEmailSettings();
+        JavaMailSenderImpl mailSender = Utility.prepareMailSender(emailSetting);
+
+        String toAddress = email;
+        String subject = "Here's the link to reset your password";
+
+        String content ="<p>Hello, </p>"
+                +"<p>You have requested to reset your password.</p>"
+                + "<p>Click the link below to change your password:</p>"
+                + "<p><a href=\"" + link +"\">Change your password</a></p>"
+                + "<br>"
+                + "<p>Ignore this email if you remember your password, "
+                + "or you have not made the request.</p ";
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+
+        helper.setFrom(emailSetting.getFromAddress(), emailSetting.getSenderName());
+        helper.setTo(toAddress);
+        helper.setSubject(subject);
+        helper.setText(content, true);
+        mailSender.send(message);
     }
 
     @PostMapping("/token/refresh")

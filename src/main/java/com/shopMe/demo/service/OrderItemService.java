@@ -5,6 +5,7 @@ import com.shopMe.demo.dto.Order.AddToOrderDto;
 import com.shopMe.demo.dto.OrderItemDto;
 import com.shopMe.demo.dto.wallet.WalletDto;
 import com.shopMe.demo.model.*;
+import com.shopMe.demo.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
