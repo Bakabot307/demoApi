@@ -114,7 +114,7 @@ public class UserController {
     @PostMapping(value = {"/phoneSignup"})
     public ResponseEntity<?> SignupWithPhone(
             @RequestBody @Valid PhoneSignupDto signupDto
-    ) throws CustomException, UserNotFoundException {
+    ) throws CustomException {
 
         if(isPhoneNumberValid(signupDto.getPhoneNumber())){
             throw new CustomException("Phone number is not valid");
@@ -293,22 +293,19 @@ public class UserController {
     public ResponseEntity<?> resetPhonePassword(@RequestParam("code") String code,
                                            @RequestParam("phoneNumber") String number,
                                            @RequestParam("newPassword") String newPassword) {
-        try {
-            //TO_DO: add check phone code
-            User user = userService.findByPhoneNumber(number);
-            VerificationResult result = twilioSmsSender.checkverification(number,code);
-            if(result.isValid())
-            {
-                userService.updatePasswordWithPhone(newPassword,user);
-                return new ResponseEntity<>(new ApiResponse(true, "updated password successfully!"), HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(MessageStrings.USER_OTP_WRONG, HttpStatus.BAD_REQUEST);
-            }
-        } catch (UserNotFoundException e) {
-            return new ResponseEntity<>(MessageStrings.USER_PHONE_NOT_FOUND, HttpStatus.BAD_REQUEST);
+        //TO_DO: add check phone code
+        User user = userService.findByPhoneNumber(number);
+        if(user==null){
+            return new ResponseEntity<>(MessageStrings.USER_NOT_FOUND, HttpStatus.BAD_REQUEST);
         }
-
-
+        VerificationResult result = twilioSmsSender.checkverification(number,code);
+        if(result.isValid())
+        {
+            userService.updatePasswordWithPhone(newPassword,user);
+            return new ResponseEntity<>(new ApiResponse(true, "updated password successfully!"), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(MessageStrings.USER_OTP_WRONG, HttpStatus.BAD_REQUEST);
+        }
 
 
     }

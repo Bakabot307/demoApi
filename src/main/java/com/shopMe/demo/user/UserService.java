@@ -170,9 +170,8 @@ public class UserService {
 
     }
 
-    public User findByPhoneNumber(String phoneNumber) throws UserNotFoundException {Optional<User> user = userRepository. findByPhoneNumber(phoneNumber);
-        return user.orElseThrow(() -> new UserNotFoundException(MessageStrings.USER_NOT_FOUND));
-
+    public User findByPhoneNumber(String phoneNumber) {Optional<User> user = userRepository. findByPhoneNumber(phoneNumber);
+        return user.orElse(null);
     }
 
     public boolean isLogin(String phoneNumber, String password) throws AuthenticationFailException, UserNotFoundException {
