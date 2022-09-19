@@ -15,6 +15,7 @@ import com.shopMe.demo.exceptions.CustomException;
 import com.shopMe.demo.model.Role;
 import com.shopMe.demo.service.LogsService;
 import com.shopMe.demo.user.userDTO.*;
+import io.swagger.annotations.ApiParam;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -113,7 +114,7 @@ public class UserController {
     @PostMapping(value = {"/phoneSignup"})
     public ResponseEntity<?> SignupWithPhone(
             @RequestBody @Valid PhoneSignupDto signupDto
-    ) throws CustomException {
+    ) throws CustomException, UserNotFoundException {
 
         if(isPhoneNumberValid(signupDto.getPhoneNumber())){
             throw new CustomException("Phone number is not valid");
@@ -183,7 +184,7 @@ public class UserController {
     }
 
     @PostMapping("/phoneLogin")
-    public ResponseEntity<?> LoginWithPhone(@RequestBody @Valid PhoneLoginDto request) throws AuthenticationFailException {
+    public ResponseEntity<?> LoginWithPhone(@RequestBody @Valid PhoneLoginDto request) throws AuthenticationFailException, UserNotFoundException {
             User user = userService.findByPhoneNumber(request.getPhoneNumber());
             if (!Objects.nonNull(user)) {
                 return new ResponseEntity<>(new ApiResponse(false, MessageStrings.USER_PHONE_NOT_FOUND), HttpStatus.BAD_REQUEST);
@@ -240,7 +241,7 @@ public class UserController {
             } catch (MessagingException | UnsupportedEncodingException e) {
                 return new ResponseEntity<>("Failed to send request", HttpStatus.BAD_REQUEST);
             }
-            return new ResponseEntity<>("OK",HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse(true, "Sent request successfully!"), HttpStatus.OK);
         } catch (UserNotFoundException e) {
             return new ResponseEntity<>(MessageStrings.USER_NOT_FOUND, HttpStatus.BAD_REQUEST);
         }
@@ -286,6 +287,24 @@ public class UserController {
         helper.setSubject(subject);
         helper.setText(content, true);
         mailSender.send(message);
+    }
+
+    @GetMapping("reset_phone_password")
+    public ResponseEntity<?> resetPhonePassword(@RequestParam("code") String code,
+                                           @RequestParam("phoneNumber") String number,
+                                           @RequestParam("newPassword") String newPassword) {
+        try {
+            //TO_DO: add check phone code
+            User user = userService.findByPhoneNumber(number);
+            userService.updatePasswordWithPhone(newPassword,user);
+            return new ResponseEntity<>("OK", HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(MessageStrings.USER_NOT_FOUND, HttpStatus.BAD_REQUEST);
+        }
+
+
+
+
     }
 
     @PostMapping("/token/refresh")

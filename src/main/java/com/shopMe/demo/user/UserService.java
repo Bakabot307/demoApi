@@ -170,12 +170,12 @@ public class UserService {
 
     }
 
-    public User findByPhoneNumber(String phoneNumber) {Optional<User> user = userRepository. findByPhoneNumber(phoneNumber);
-        return user.orElse(null);
+    public User findByPhoneNumber(String phoneNumber) throws UserNotFoundException {Optional<User> user = userRepository. findByPhoneNumber(phoneNumber);
+        return user.orElseThrow(() -> new UserNotFoundException(MessageStrings.USER_NOT_FOUND));
 
     }
 
-    public boolean isLogin(String phoneNumber, String password) throws AuthenticationFailException {
+    public boolean isLogin(String phoneNumber, String password) throws AuthenticationFailException, UserNotFoundException {
         User user = findByPhoneNumber(phoneNumber);
         if(!Objects.nonNull(user)){
             throw new AuthenticationFailException(MessageStrings.USER_NOT_FOUND);
@@ -215,7 +215,11 @@ public class UserService {
         userRepository.save(user);
     }
 
-
+    public void updatePasswordWithPhone(String newPassword, User user) {
+        user.setPassword(newPassword);
+        encodePassword(user);
+        userRepository.save(user);
+    }
 
 
 //    public ResponseDto createUser(String token, UserCreateDto userCreateDto) throws CustomException, AuthenticationFailException {
