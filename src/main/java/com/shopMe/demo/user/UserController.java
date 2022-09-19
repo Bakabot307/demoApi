@@ -17,6 +17,7 @@ import com.shopMe.demo.service.LogsService;
 import com.shopMe.demo.user.userDTO.*;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -64,6 +65,9 @@ public class UserController {
 
     @Autowired
     SettingService settingService;
+
+    @Value("${site.url}")
+    private String SITE_URL;
 
 
     @PostMapping(value = {"/signup"})
@@ -228,7 +232,7 @@ public class UserController {
                                             @RequestParam String email){
         try {
             String token = userService.updateResetPasswordToken(email);
-            String link = Utility.getSiteURL(request)+ "/reset_password?token=" + token;
+            String link = SITE_URL+ "/reset_password?token=" + token;
             System.out.println("email " + email);
             System.out.println("link " + link);
             try {

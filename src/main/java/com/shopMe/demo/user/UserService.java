@@ -16,6 +16,7 @@ import com.shopMe.demo.user.userDTO.SignInResponseDto;
 import com.shopMe.demo.user.userDTO.UserDataDto;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -53,7 +54,8 @@ public class UserService {
     @Autowired
     LogsService logsService;
 
-
+    @Value("${site.url}")
+    private String SITE_URL;
     public User save2(User user) {
         String rawPassword = user.getPassword();
         String encodedPassword = passwordEncoder.encode(rawPassword);
@@ -105,7 +107,7 @@ public class UserService {
 
         content = content.replace("[[name]]", user.getFullName());
 
-        String verifyURL = Utility.getSiteURL(request) + "/verify?code=" + user.getEmailVerifyCode();
+        String verifyURL = SITE_URL + "/verify?code=" + user.getEmailVerifyCode();
 
         content = content.replace("[[URL]]", verifyURL);
 
