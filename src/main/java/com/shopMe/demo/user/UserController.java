@@ -296,10 +296,16 @@ public class UserController {
         try {
             //TO_DO: add check phone code
             User user = userService.findByPhoneNumber(number);
-            userService.updatePasswordWithPhone(newPassword,user);
-            return new ResponseEntity<>("OK", HttpStatus.OK);
+            VerificationResult result = twilioSmsSender.checkverification(number,code);
+            if(result.isValid())
+            {
+                userService.updatePasswordWithPhone(newPassword,user);
+                return new ResponseEntity<>(new ApiResponse(true, "updated password successfully!"), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(MessageStrings.USER_OTP_WRONG, HttpStatus.BAD_REQUEST);
+            }
         } catch (UserNotFoundException e) {
-            return new ResponseEntity<>(MessageStrings.USER_NOT_FOUND, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(MessageStrings.USER_PHONE_NOT_FOUND, HttpStatus.BAD_REQUEST);
         }
 
 
