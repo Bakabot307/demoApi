@@ -344,7 +344,8 @@ public class UserController {
         User user1 = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User updatingUser = userService.getById(user1.getId());
         updatingUser.Update(updateUserDto);
-        userService.save(updatingUser);
+
+        userService.updateUser(updatingUser);
         return new ResponseEntity<>(new ApiResponse(true, "Updated user successfully!"), HttpStatus.OK);
     }
 

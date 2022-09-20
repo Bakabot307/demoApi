@@ -94,7 +94,6 @@ public class User implements UserDetails {
     public void Update(UpdateUserDto dto) {
         this.firstName = dto.getFirstName();
         this.lastName = dto.getLastName();
-        this.password = dto.getPassword();
     }
 
     public Integer getId() {

@@ -40,9 +40,8 @@ public class UserProfileResponse {
     private Boolean emailVerified;
 
 
-    private Set<Role> roles = new HashSet<>();
+   private String[] roles;
 
-    private List<Logs> logs;
 
     public UserProfileResponse() {
     }
@@ -59,10 +58,14 @@ public class UserProfileResponse {
         this.enabled = user.getEnabled();
         this.phoneEnabled = user.getPhoneEnabled();
         this.emailVerified = user.getEmailVerified();
-        this.roles = user.getRoles();
-        this.logs = user.getLogs();
+        this.roles = replaceRole(user.getRoles());
     }
-
+public String[] replaceRole(Set<Role> role){
+        String roleString = role.toString();
+        roleString = roleString.replace("[", "").replace("]", "");
+        String[] roleNames = roleString.split(",");
+        return roleNames;
+    }
     public Integer getId() {
         return id;
     }
@@ -144,19 +147,11 @@ public class UserProfileResponse {
     }
 
 
-    public Set<Role> getRoles() {
+    public String[] getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(String[] roles) {
         this.roles = roles;
-    }
-
-    public List<Logs> getLogs() {
-        return logs;
-    }
-
-    public void setLogs(List<Logs> logs) {
-        this.logs = logs;
     }
 }

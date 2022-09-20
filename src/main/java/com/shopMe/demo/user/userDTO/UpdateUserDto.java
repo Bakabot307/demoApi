@@ -16,22 +16,10 @@ public class UpdateUserDto {
     @Length(min = 3,max = 255,message = "Last name must have 3-255 characters")
     private String lastName;
 
-    @Column(name = "password",length = 255, nullable = false)
-    @NotBlank(message = "Password cannot be null")
-    @Length(min = 8,message = "Password must have at least 8 characters")
-    @Length(max = 255,message = "Last name must have below 255 characters")
-    private String password;
 
     public UpdateUserDto() {
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public String getFirstName() {
         return firstName;
