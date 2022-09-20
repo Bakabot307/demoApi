@@ -1,4 +1,4 @@
-package com.shopMe.demo.user.userDTO;
+package com.shopMe.demo.controllers.user.userDTO;
 
 public class Profile {
     private String email;

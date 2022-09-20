@@ -1,6 +1,6 @@
 package com.shopMe.demo.model;
 
-import com.shopMe.demo.user.User;
+import com.shopMe.demo.controllers.user.User;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

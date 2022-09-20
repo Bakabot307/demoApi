@@ -6,7 +6,7 @@ import com.shopMe.demo.dto.cart.CartItemDto;
 import com.shopMe.demo.exceptions.CartItemNotExistException;
 import com.shopMe.demo.model.Cart;
 import com.shopMe.demo.model.Product;
-import com.shopMe.demo.user.User;
+import com.shopMe.demo.controllers.user.User;
 import com.shopMe.demo.repository.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

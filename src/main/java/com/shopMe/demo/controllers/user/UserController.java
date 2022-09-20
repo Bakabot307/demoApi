@@ -1,4 +1,4 @@
-package com.shopMe.demo.user;
+package com.shopMe.demo.controllers.user;
 
 import com.shopMe.demo.Security.jwt.JwtTokenUtil;
 import com.shopMe.demo.Settings.EmailSettingBag;
@@ -10,12 +10,11 @@ import com.shopMe.demo.config.MessageStrings;
 import com.shopMe.demo.config.Twilio.TwilioSmsSender;
 import com.shopMe.demo.config.Twilio.VerificationResult;
 
+import com.shopMe.demo.controllers.user.userDTO.*;
 import com.shopMe.demo.exceptions.AuthenticationFailException;
 import com.shopMe.demo.exceptions.CustomException;
 import com.shopMe.demo.model.Role;
-import com.shopMe.demo.service.LogsService;
-import com.shopMe.demo.user.userDTO.*;
-import io.swagger.annotations.ApiParam;
+import com.shopMe.demo.log.LogsService;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -363,5 +362,15 @@ public class UserController {
         }
         userService.updateAvatar(updatingUser);
         return new ResponseEntity<>(new ApiResponse(true, "Updated avatar successfully!"), HttpStatus.OK);
+    }
+
+    @RolesAllowed("ROLE_USER")
+    @GetMapping("user/profile")
+        public ResponseEntity<UserProfileResponse> userProfile() throws UserNotFoundException {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User userDB = userService.getById(user.getId());
+        UserProfileResponse userDto = new UserProfileResponse(userDB);
+
+        return new ResponseEntity<UserProfileResponse>(userDto,HttpStatus.OK);
     }
 }

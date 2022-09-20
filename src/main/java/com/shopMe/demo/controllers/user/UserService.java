@@ -1,19 +1,14 @@
-package com.shopMe.demo.user;
+package com.shopMe.demo.controllers.user;
 
 
 import com.shopMe.demo.Settings.EmailSettingBag;
 import com.shopMe.demo.Utility;
 import com.shopMe.demo.config.MessageStrings;
 import com.shopMe.demo.exceptions.AuthenticationFailException;
-import com.shopMe.demo.exceptions.CustomException;
-import com.shopMe.demo.model.AuthenticationToken;
 import com.shopMe.demo.service.AuthenticationService;
-import com.shopMe.demo.service.LogsService;
+import com.shopMe.demo.log.LogsService;
 import com.shopMe.demo.Settings.SettingService;
 import com.shopMe.demo.service.WalletService;
-import com.shopMe.demo.user.userDTO.SignInDto;
-import com.shopMe.demo.user.userDTO.SignInResponseDto;
-import com.shopMe.demo.user.userDTO.UserDataDto;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -121,27 +116,27 @@ public class UserService {
 
 
 
-    public SignInResponseDto signIn(SignInDto signInDto) throws AuthenticationFailException, CustomException {
-        // first find User by email
-        User user = userRepository.findByEmail(signInDto.getEmail()).get();
-        if(!Objects.nonNull(user)){
-            throw new AuthenticationFailException(MessageStrings.USER_NOT_FOUND);
-        }
-        // check if password is right
-        if (!user.getPassword().equals(passwordEncoder.encode(signInDto.getPassword()))){
-            // passwords do not match
-            throw  new AuthenticationFailException(MessageStrings.USER_PASSWORD_WRONG);
-        }
-
-        AuthenticationToken token = authenticationService.getToken(user);
-
-        if(!Objects.nonNull(token)) {
-            // token not present
-            throw new CustomException(MessageStrings.AUTH_TOEKN_NOT_PRESENT);
-        }
-        UserDataDto userDataDto = new UserDataDto(user.getId(), user.getFirstName(), user.getLastName(), user.getRoles().toString(), user.getEmail());
-        return new SignInResponseDto ("success", token.getToken());
-    }
+//    public SignInResponseDto signIn(SignInDto signInDto) throws AuthenticationFailException, CustomException {
+//        // first find User by email
+//        User user = userRepository.findByEmail(signInDto.getEmail()).get();
+//        if(!Objects.nonNull(user)){
+//            throw new AuthenticationFailException(MessageStrings.USER_NOT_FOUND);
+//        }
+//        // check if password is right
+//        if (!user.getPassword().equals(passwordEncoder.encode(signInDto.getPassword()))){
+//            // passwords do not match
+//            throw  new AuthenticationFailException(MessageStrings.USER_PASSWORD_WRONG);
+//        }
+//
+//        AuthenticationToken token = authenticationService.getToken(user);
+//
+//        if(!Objects.nonNull(token)) {
+//            // token not present
+//            throw new CustomException(MessageStrings.AUTH_TOEKN_NOT_PRESENT);
+//        }
+//        UserDataDto userDataDto = new UserDataDto(user.getId(), user.getFirstName(), user.getLastName(), user.getRoles().toString(), user.getEmail());
+//        return new SignInResponseDto ("success", token.getToken());
+//    }
 
     public User getById(Integer id) throws UserNotFoundException {
         try {

@@ -2,11 +2,12 @@ package com.shopMe.demo.service;
 
 import com.shopMe.demo.dto.Request.RequestDto;
 import com.shopMe.demo.dto.Request.RequestUpdateDto;
-import com.shopMe.demo.model.Logs;
+import com.shopMe.demo.log.Logs;
+import com.shopMe.demo.log.LogsService;
 import com.shopMe.demo.model.Request;
-import com.shopMe.demo.user.User;
+import com.shopMe.demo.controllers.user.User;
 import com.shopMe.demo.model.Wallet;
-import com.shopMe.demo.user.UserRepository;
+import com.shopMe.demo.controllers.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.shopMe.demo.repository.*;

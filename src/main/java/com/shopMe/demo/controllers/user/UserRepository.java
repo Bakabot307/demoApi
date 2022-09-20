@@ -1,4 +1,4 @@
-package com.shopMe.demo.user;
+package com.shopMe.demo.controllers.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

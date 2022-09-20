@@ -1,4 +1,4 @@
-package com.shopMe.demo.dto.Log;
+package com.shopMe.demo.log;
 
 import java.util.Date;
 

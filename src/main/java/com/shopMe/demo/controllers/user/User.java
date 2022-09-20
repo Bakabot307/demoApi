@@ -1,11 +1,11 @@
-package com.shopMe.demo.user;
+package com.shopMe.demo.controllers.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.shopMe.demo.model.Logs;
+import com.shopMe.demo.controllers.user.userDTO.UpdateUserDto;
+import com.shopMe.demo.log.Logs;
 import com.shopMe.demo.model.Market;
 import com.shopMe.demo.model.OrderItem;
 import com.shopMe.demo.model.Role;
-import com.shopMe.demo.user.userDTO.UpdateUserDto;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

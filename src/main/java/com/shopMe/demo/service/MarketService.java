@@ -3,9 +3,10 @@ package com.shopMe.demo.service;
 
 import com.shopMe.demo.dto.market.AddToMarketDto;
 import com.shopMe.demo.dto.market.MarketDto;
-import com.shopMe.demo.model.Logs;
+import com.shopMe.demo.log.Logs;
+import com.shopMe.demo.log.LogsService;
 import com.shopMe.demo.model.Market;
-import com.shopMe.demo.user.User;
+import com.shopMe.demo.controllers.user.User;
 import com.shopMe.demo.model.Wallet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

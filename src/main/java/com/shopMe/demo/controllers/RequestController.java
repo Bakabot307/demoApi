@@ -7,10 +7,11 @@ import com.shopMe.demo.dto.Request.RequestDto;
 import com.shopMe.demo.dto.Request.RequestUpdateDto;
 
 import com.shopMe.demo.exceptions.AuthenticationFailException;
+import com.shopMe.demo.log.LogsService;
 import com.shopMe.demo.model.Request;
-import com.shopMe.demo.user.User;
+import com.shopMe.demo.controllers.user.User;
 import com.shopMe.demo.service.*;
-import com.shopMe.demo.user.UserService;
+import com.shopMe.demo.controllers.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

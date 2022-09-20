@@ -5,7 +5,7 @@ import com.shopMe.demo.dto.cart.CartItemDto;
 import com.shopMe.demo.exceptions.OrderNotFoundException;
 import com.shopMe.demo.model.Order;
 import com.shopMe.demo.model.OrderItem;
-import com.shopMe.demo.user.User;
+import com.shopMe.demo.controllers.user.User;
 import com.shopMe.demo.repository.OrderItemsRepository;
 import com.shopMe.demo.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;

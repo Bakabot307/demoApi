@@ -1,6 +1,8 @@
-package com.shopMe.demo.model;
+package com.shopMe.demo.log;
 
-import com.shopMe.demo.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.shopMe.demo.controllers.user.User;
+import com.shopMe.demo.model.Market;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -25,6 +27,8 @@ public class Logs {
     private Integer receiverId;
 
     private String type;
+
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "users_id", referencedColumnName = "id")
     private User user;
