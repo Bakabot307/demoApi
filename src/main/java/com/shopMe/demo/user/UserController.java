@@ -1,4 +1,4 @@
-package com.shopMe.demo.controllers.user;
+package com.shopMe.demo.user;
 
 import com.shopMe.demo.Security.jwt.JwtTokenUtil;
 import com.shopMe.demo.Settings.EmailSettingBag;
@@ -9,12 +9,11 @@ import com.shopMe.demo.config.FileUploadUtil;
 import com.shopMe.demo.config.MessageStrings;
 import com.shopMe.demo.config.Twilio.TwilioSmsSender;
 import com.shopMe.demo.config.Twilio.VerificationResult;
-
-import com.shopMe.demo.controllers.user.userDTO.*;
 import com.shopMe.demo.exceptions.AuthenticationFailException;
 import com.shopMe.demo.exceptions.CustomException;
 import com.shopMe.demo.model.Role;
 import com.shopMe.demo.log.LogsService;
+import com.shopMe.demo.user.userDTO.*;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -89,6 +88,7 @@ public class UserController {
         User user = new User(signupDto.getFirstName(), signupDto.getLastName(), signupDto.getEmail(), encryptedPassword);
         user.setCreatedDate(new Date());
         user.setEnabled(false);
+        user.setEmailVerified(false);
         user.addRole(new Role(2L));
 
         String randomCode = RandomString.make(64);
@@ -127,7 +127,7 @@ public class UserController {
         {
             String encryptedPassword;
             encryptedPassword = passwordEncoder.encode(signupDto.getPassword());
-            System.out.println(encryptedPassword);
+
             User user = new User();
             user.setFirstName(signupDto.getFirstName());
             user.setLastName(signupDto.getLastName());
@@ -135,11 +135,10 @@ public class UserController {
             user.setPhoneNumber(signupDto.getPhoneNumber());
             user.setCreatedDate(new Date());
             user.setEnabled(true);
+            user.setPhoneEnabled(true);
             user.addRole(new Role(2L));
-
-            String randomCode = RandomString.make(64);
-            user.setEmailVerifyCode(randomCode);
             user.setAvatar(null);
+
             User savedUser = userService.save(user);
 
             if (Objects.nonNull(savedUser)) {
@@ -173,12 +172,18 @@ public class UserController {
                             request.getEmail(), request.getPassword()));
 
             User user = (User) authentication.getPrincipal();
+            User userDB = userService.getById(user.getId());
+            if(!userDB.getEmailVerified() && userDB.getEmailVerifyCode()!=null){
+                return new ResponseEntity<>(new ApiResponse(false, "User hasn't verified"), HttpStatus.BAD_REQUEST);
+            }
             String accessToken = jwtUtil.generateAccessToken(user);
             String refreshToken = jwtUtil.generateRefreshToken(user);
             SignInResponseDto response = new SignInResponseDto(accessToken, refreshToken);
             return ResponseEntity.ok().body(response);
         } catch (BadCredentialsException ex) {
             return new ResponseEntity<>(new ApiResponse(false, MessageStrings.USER_INFO_NOT_MATCH), HttpStatus.BAD_REQUEST);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(new ApiResponse(false, MessageStrings.USER_NOT_FOUND), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -189,7 +194,7 @@ public class UserController {
                 return new ResponseEntity<>(new ApiResponse(false, MessageStrings.USER_PHONE_NOT_FOUND), HttpStatus.BAD_REQUEST);
             }
 
-        if (userService.isLogin(request.getPhoneNumber(), request.getPassword())) {
+            if (userService.isLogin(request.getPhoneNumber(), request.getPassword())) {
                 String accessToken = jwtUtil.generateAccessToken(user);
                 String refreshToken = jwtUtil.generateRefreshToken(user);
                 SignInResponseDto response = new SignInResponseDto(accessToken, refreshToken);

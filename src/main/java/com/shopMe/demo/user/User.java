@@ -1,7 +1,7 @@
-package com.shopMe.demo.controllers.user;
+package com.shopMe.demo.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.shopMe.demo.controllers.user.userDTO.UpdateUserDto;
+import com.shopMe.demo.user.userDTO.UpdateUserDto;
 import com.shopMe.demo.log.Logs;
 import com.shopMe.demo.model.Market;
 import com.shopMe.demo.model.OrderItem;
@@ -172,21 +172,8 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public Boolean getPhoneEnabled() {
-        return phoneEnabled;
-    }
 
-    public void setPhoneEnabled(Boolean phoneEnabled) {
-        this.phoneEnabled = phoneEnabled;
-    }
 
-    public Boolean getEmailVerified() {
-        return emailVerified;
-    }
-
-    public void setEmailVerified(Boolean emailVerified) {
-        this.emailVerified = emailVerified;
-    }
 
     public String getResetPasswordCode() {
         return resetPasswordCode;
@@ -248,12 +235,29 @@ public class User implements UserDetails {
         this.avatar = avatar;
     }
 
+
     public Boolean getEnabled() {
         return enabled;
     }
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public Boolean getPhoneEnabled() {
+        return phoneEnabled;
+    }
+
+    public void setPhoneEnabled(Boolean phoneEnabled) {
+        this.phoneEnabled = phoneEnabled;
+    }
+
+    public Boolean getEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(Boolean emailVerified) {
+        this.emailVerified = emailVerified;
     }
 
     public String getEmailVerifyCode() {

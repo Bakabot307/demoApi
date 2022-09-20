@@ -1,7 +1,6 @@
 package com.shopMe.demo.log;
 
-import com.shopMe.demo.log.Logs;
-import com.shopMe.demo.controllers.user.User;
+import com.shopMe.demo.user.User;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package com.shopMe.demo.controllers.user.userDTO;
+package com.shopMe.demo.user.userDTO;
 
 
 public class SignUpResponseDto {

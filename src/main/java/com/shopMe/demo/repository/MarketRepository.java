@@ -1,7 +1,7 @@
 package com.shopMe.demo.repository;
 
 import com.shopMe.demo.model.Market;
-import com.shopMe.demo.controllers.user.User;
+import com.shopMe.demo.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -3,7 +3,7 @@ package com.shopMe.demo.Security;
 import javax.servlet.http.HttpServletResponse;
 
 import com.shopMe.demo.Security.jwt.JwtTokenFilter;
-import com.shopMe.demo.controllers.user.UserRepository;
+import com.shopMe.demo.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;

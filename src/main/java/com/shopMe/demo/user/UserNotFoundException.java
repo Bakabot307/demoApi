@@ -1,4 +1,4 @@
-package com.shopMe.demo.controllers.user;
+package com.shopMe.demo.user;
 
 public class UserNotFoundException extends Exception {
 

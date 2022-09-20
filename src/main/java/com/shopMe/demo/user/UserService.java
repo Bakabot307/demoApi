@@ -1,4 +1,4 @@
-package com.shopMe.demo.controllers.user;
+package com.shopMe.demo.user;
 
 
 import com.shopMe.demo.Settings.EmailSettingBag;
@@ -155,6 +155,7 @@ public class UserService {
                 return false;
             } else {
                 userRepository.enable(user.getId());
+
                 return true;
             }
 

@@ -1,6 +1,6 @@
 package com.shopMe.demo.repository;
 
-import com.shopMe.demo.controllers.user.User;
+import com.shopMe.demo.user.User;
 import com.shopMe.demo.model.Wallet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

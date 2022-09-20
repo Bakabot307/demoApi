@@ -4,7 +4,7 @@ package com.shopMe.demo.service;
 import com.shopMe.demo.config.MessageStrings;
 import com.shopMe.demo.exceptions.AuthenticationFailException;
 import com.shopMe.demo.model.AuthenticationToken;
-import com.shopMe.demo.controllers.user.User;
+import com.shopMe.demo.user.User;
 import com.shopMe.demo.repository.TokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

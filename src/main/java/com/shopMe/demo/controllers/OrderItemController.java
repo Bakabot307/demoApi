@@ -4,7 +4,7 @@ import com.shopMe.demo.common.ApiResponse;
 import com.shopMe.demo.dto.Order.AddToOrderDto;
 import com.shopMe.demo.dto.OrderItemDto;
 import com.shopMe.demo.exceptions.AuthenticationFailException;
-import com.shopMe.demo.controllers.user.User;
+import com.shopMe.demo.user.User;
 import com.shopMe.demo.service.AuthenticationService;
 import com.shopMe.demo.service.OrderItemService;
 import org.springframework.beans.factory.annotation.Autowired;

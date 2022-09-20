@@ -1,7 +1,7 @@
-package com.shopMe.demo.controllers.user.userDTO;
+package com.shopMe.demo.user.userDTO;
 
 
-import com.shopMe.demo.controllers.user.User;
+import com.shopMe.demo.user.User;
 import com.shopMe.demo.log.Logs;
 import com.shopMe.demo.model.Role;
 

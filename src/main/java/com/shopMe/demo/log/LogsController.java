@@ -1,7 +1,7 @@
 package com.shopMe.demo.log;
 
 import com.shopMe.demo.exceptions.AuthenticationFailException;
-import com.shopMe.demo.controllers.user.User;
+import com.shopMe.demo.user.User;
 import com.shopMe.demo.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

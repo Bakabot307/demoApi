@@ -2,7 +2,7 @@ package com.shopMe.demo.Security.jwt;
 
 import java.util.Date;
 
-import com.shopMe.demo.controllers.user.User;
+import com.shopMe.demo.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
